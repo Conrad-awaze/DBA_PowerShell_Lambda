@@ -15,8 +15,9 @@ $runtimeBuildScript = [System.IO.Path]::Combine('powershell-runtime', 'build-Pws
 #################
 $AWS_Modules = @(
 
-    'AWS.Tools.Common','AWS.Tools.AutoScaling','AWS.Tools.CloudFormation','AWS.Tools.CloudWatch','AWS.Tools.CloudWatchLogs','AWS.Tools.DynamoDBv2',
-    'AWS.Tools.EBS','AWS.Tools.EC2','AWS.Tools.EventBridge','AWS.Tools.ElasticLoadBalancing','AWS.Tools.Lambda','AWS.Tools.S3','AWS.Tools.SQS'
+    'AWS.Tools.Common','AWS.Tools.AutoScaling','AWS.Tools.CloudFormation','AWS.Tools.CloudWatch',
+    'AWS.Tools.CloudWatchLogs','AWS.Tools.DynamoDBv2','AWS.Tools.EBS','AWS.Tools.EC2','AWS.Tools.EventBridge',
+    'AWS.Tools.ElasticLoadBalancing','AWS.Tools.Lambda','AWS.Tools.S3','AWS.Tools.SQS'
 )
 $awsToolsLayerPath = Join-Path -Path $layersRoot -ChildPath 'modulesLayer'
 $awsToolsBuildScript = [System.IO.Path]::Combine('powershell-modules', 'AWSToolsforPowerShell', 'build-AWSToolsLayer.ps1')
