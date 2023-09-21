@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: PowerShell custom runtime and a Lambda function.
+Description: Demo to explore how the PowerShell custom runtime and a Lambda function work.
 ##########################################################################
 #  Parameters & Globals                                                  #
 ##########################################################################
@@ -8,25 +8,25 @@ Globals:
   Function:
     Tracing: Active
     Tags:
-      Application: runtime-layer-function
+      Application: demo-runtime-layer-function
 Resources:
 ##########################################################################
 #  Lambda functions                                                      #
 ##########################################################################
-  PowerShellFunction:
+  DemoPowerShellFunction:
     Type: AWS::Serverless::Function
     Properties:
       Architectures:
         - x86_64
-      Description: PowerShell-Lambda-Runtime Function
+      Description: PowerShell-Lambda-Runtime Demo Function
       CodeUri: function/
       Runtime: provided.al2
       Handler: examplehandler.ps1::handler
-      MemorySize: 512
+      MemorySize: 1024
       Timeout: 100
       Layers:
         - !Ref PwshRuntimeLayer
-        - !Ref AWSToolsLayer
+        - !Ref DemoAWSToolsLayer
     Metadata:
       BuildMethod: makefile
 ##########################################################################
@@ -42,7 +42,7 @@ Resources:
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile
-  PwshRuntimeParameter:
+  DemoPwshRuntimeParameter:
     Type: AWS::SSM::Parameter
     Properties:
       Name: demo-lambda-powershell-runtime-latest-version-arn
@@ -50,23 +50,23 @@ Resources:
       Type: String
       Value: !Ref PwshRuntimeLayer
 
-  AWSToolsLayer:
+  DemoAWSToolsLayer:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      Description: Layer containing AWS.Tools
+      Description: Layer containing Demo-AWS.Tools
       ContentUri: ./layers/modulesLayer
       CompatibleRuntimes:
         - provided.al2
       RetentionPolicy: Delete
     Metadata:
       BuildMethod: makefile
-  AWSToolsParameter:
+  DemoAWSToolsParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: lambda-powershell-AWSTools-latest-version-arn
-      Description: AWSTools Layer Name
+      Name: lambda-powershell-DemoAWSTools-latest-version-arn
+      Description: DemoAWSTools Layer Name
       Type: String
-      Value: !Ref AWSToolsLayer
+      Value: !Ref DemoAWSToolsLayer
 
 ##########################################################################
 #  OUTPUTS                                                               #
@@ -75,15 +75,12 @@ Outputs:
   PwshRuntimeLayer:
     Value: !Ref PwshRuntimeLayer
     Description: PwshRuntimeLayer Layer ARN
-  AWSToolsLayer:
-    Value: !Ref AWSToolsLayer
-    Description: AWSToolsLayer Layer ARN
-  PowerShellFunction:
-    Value: !Ref PowerShellFunction
+  DemoAWSToolsLayer:
+    Value: !Ref DemoAWSToolsLayer
+    Description: DemoAWSToolsLayer Layer ARN
+  DemoPowerShellFunction:
+    Value: !Ref DemoPowerShellFunction
     Description: PowerShell Lambda Function
-
-
-
 
 
 
