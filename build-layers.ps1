@@ -23,6 +23,17 @@ $awsToolsLayerPath = Join-Path -Path $layersRoot -ChildPath 'modulesLayer'
 $awsToolsBuildScript = [System.IO.Path]::Combine('powershell-modules', 'AWSToolsforPowerShell', 'build-AWSToolsLayer.ps1')
 & $awsToolsBuildScript -ModuleList $AWS_Modules -LayerPath $awsToolsLayerPath
 
+#################
+# ThirdPartyLayer #
+#################
+$Modules = @(
+
+    'PSTeams'
+)
+$ThirdPartyLayerrPath = Join-Path -Path $layersRoot -ChildPath 'modulesLayer'
+$ThirdPartBuildScript = [System.IO.Path]::Combine('powershell-modules', 'ThirdParty', 'build-ThirdPartyLayer.ps1')
+& $ThirdPartBuildScript -ModuleList $Modules -LayerPath $ThirdPartyLayerrPath
+
 ########################
 # SAM Template Updates #
 ########################

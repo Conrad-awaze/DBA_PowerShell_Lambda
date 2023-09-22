@@ -45,7 +45,7 @@ Resources:
   PwshRuntimeParameter:
     Type: AWS::SSM::Parameter
     Properties:
-      Name: demo-lambda-powershell-runtime-latest-version-arn
+      Name: lambda-powershell-runtime-latest-version-arn
       Description: PwshRuntime Layer Name
       Type: String
       Value: !Ref PwshRuntimeLayer
@@ -81,6 +81,11 @@ Outputs:
   PowerShellFunction:
     Value: !Ref PowerShellFunction
     Description: PowerShell Lambda Function
+
+
+
+
+
 
 
 
