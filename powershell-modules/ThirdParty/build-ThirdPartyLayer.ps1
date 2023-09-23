@@ -7,7 +7,7 @@ param (
     [string]$LayerPath, #= ([System.IO.Path]::Combine($PSScriptRoot, 'layers', 'modulesLayer')),
 
     # The URL to the AWS.Tools zip file.
-    [string]$AWSToolsSource = 'https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip',
+    # [string]$AWSToolsSource = 'https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip',
 
     # The staging path where the AWS Tools for PowerShell will be extracted
     [string]$ModuleStagingPath = ([System.IO.Path]::Combine($PSScriptRoot, 'layers', 'staging')),
@@ -20,11 +20,25 @@ param (
 # PSTeams #
 #################
 
-Write-Host "Downloading PSTeams" -foregroundcolor "green"
+foreach ($Module in $ModuleList) {
 
-Save-Module -Name PSTeams -Path "$LayerPath\modules" -Force
+    Write-Host "Downloading Module: $Module" -foregroundcolor "green"
 
-$File = Get-ChildItem -Path  ([System.IO.Path]::Combine($LayerPath, 'modules', 'PSTeams')) -Recurse -Filter '*.psd1'
+    Save-Module -Name $Module -Path "$LayerPath\modules" -Force
 
-$Content =  Get-Content -Path $File 
-$Content.Replace('RequiredModules', '# RequiredModules') | Set-Content -Path $File.FullName
+    if ($Module -eq 'PSTeams') {
+
+        $File = Get-ChildItem -Path  ([System.IO.Path]::Combine($LayerPath, 'modules', $Module)) -Recurse -Filter '*.psd1'
+
+        $Content =  Get-Content -Path $File 
+        $Content.Replace('RequiredModules', '# RequiredModules') | Set-Content -Path $File.FullName
+        
+    }
+
+    
+}
+
+
+
+
+
