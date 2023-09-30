@@ -19,57 +19,70 @@ function handler
         
     )
     
-    # $Event = $LambdaInput
-    
     $InstanceID = $(([regex]::Matches("$($LambdaInput.resources)", '\w+\W+\w+$')).Value)
-    
-    Write-Host "Time - $($LambdaInput.time)"
-    Write-Host "Detail - $($LambdaInput.detail)"
-    Write-Host "Resources - $($LambdaInput.resources)"
-    Write-Host "Instance-ID - $InstanceID"
-    # Write-Host "$(Get-EC2Instance)"
     $EC2 =  (Get-EC2Instance -InstanceId $InstanceID).Instances
     
-    Write-Host "Type - $($EC2.InstanceType)"
+    $EC2Instance = [PSCustomObject]@{
+
+        Name        = ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Name).Value
+        Owner       = ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Owner).Value
+        State       = $($EC2.State.Name.Value.ToUpper())
+        Type        = $EC2.InstanceType.Value
+        InstanceId  = $EC2.InstanceId
+        KeyName     = $EC2.KeyName
+        LaunchTime  = $EC2.LaunchTime
+    }
     
-    Write-Host "State - $($EC2.State.Name.Value.ToUpper())"
+    $LambdaCon = [PSCustomObject]@{
+
+        LogStream   = $LambdaContext.LogStreamName
+        LogGroup    = $LambdaContext.LogGroupName
+        Function    = $LambdaContext.FunctionName
+        Time        = $($LambdaInput.time)
+        Memory      = $LambdaContext.MemoryLimitInMB
+
+    }
+    
     #-----------------------------------------------------------------------------------------------------------------------------------------------
     # Send Teams Notification
     
-    # New-AdaptiveCard -Uri $URI -VerticalContentAlignment center {
-
-    #     New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text 'Notification from Lambda Function' -Color Accent -HorizontalAlignment Center
-    #     New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[13])" -Subtle -Wrap -HorizontalAlignment Center
-    #     New-AdaptiveFactSet {
-
-    #                 New-AdaptiveFact -Title "Function" -Value $LambdaContext.FunctionName
-    #                 # New-AdaptiveFact -Title "Version" -Value $LambdaContext.FunctionVersion
-    #                 New-AdaptiveFact -Title "Region" -Value "$($LambdaInput.region)"
-    #                 New-AdaptiveFact -Title "Memory(MB)" -Value $LambdaContext.MemoryLimitInMB 
-    #                 New-AdaptiveFact -Title "Log Group" -Value $LambdaContext.LogGroupName
-    #                 New-AdaptiveFact -Title "Log Stream" -Value $LambdaContext.LogStreamName
-                    
-                     
-    #             }  -Separator Medium
+    New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
+        New-AdaptiveContainer {
+    
+            New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server $($EC2Instance.Name) $($EC2Instance.State)" -Color Accent -HorizontalAlignment Center
+            New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
+            
+        }
+    } -Action {
+        New-AdaptiveAction -Title "Server Details" -Body   {
+            New-AdaptiveTextBlock -Text "Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
+            New-AdaptiveFactSet {
+                
+                New-AdaptiveFact -Title 'Name' -Value $EC2Instance.Name
+                New-AdaptiveFact -Title 'Owner' -Value $EC2Instance.Owner
+                New-AdaptiveFact -Title 'State' -Value $EC2Instance.State
+                New-AdaptiveFact -Title 'Type' -Value $EC2Instance.Type
+                New-AdaptiveFact -Title 'InstanceId' -Value $EC2Instance.InstanceId
+                New-AdaptiveFact -Title 'KeyName' -Value $EC2Instance.KeyName
+                New-AdaptiveFact -Title 'LaunchTime' -Value $EC2Instance.LaunchTime
+            } -Separator Medium 
+        } 
+        New-AdaptiveAction -Title "Lambda Details" -Body   {
+            New-AdaptiveTextBlock -Text "Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
+            New-AdaptiveFactSet {
+                
+                New-AdaptiveFact -Title "LogStream" -Value $LambdaCon.LogStream
+                New-AdaptiveFact -Title "LogGroup" -Value $LambdaCon.LogGroup
+                New-AdaptiveFact -Title "Function" -Value $LambdaCon.Function
+                New-AdaptiveFact -Title "Time" -Value $LambdaCon.Time
+                New-AdaptiveFact -Title "Memory(MB)" -Value $LambdaCon.Memory 
+                
+            } -Separator Medium 
+        }
         
-    # }   -FullWidth
-    
-    # Write-Host "Teams Notification Sent"
-    
+    }
+       
     #-----------------------------------------------------------------------------------------------------------------------------------------------
-    
-    # Write-Host 'Function name:' $LambdaContext.FunctionName
-    # Write-Host 'Remaining milliseconds:' $LambdaContext.RemainingTime.TotalMilliseconds
-    # Write-Host 'Log group name:' $LambdaContext.LogGroupName
-    # Write-Host 'Log stream name:' $LambdaContext.LogStreamName
-    
-    # Get-AWSRegion
-    # Write-Host "PowerShell Version - $($PSVersionTable.PSVersion)"
-    # $Commands = $(Get-Command -Module 'PSTeams')
-    # Write-Host $Commands.Count
-    #Get-DDBTableList
-    # Write-Host (Get-LMLayerList).LayerName
-    # Get-Command -Module "AWS.Tools.Lambda"
     
     
 }

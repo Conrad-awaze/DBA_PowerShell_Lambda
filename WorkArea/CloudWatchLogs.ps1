@@ -33,3 +33,20 @@ $InstanceID = ([regex]::Matches($Resources, '\w+\W+\w+$')).Value
 $EC2 =  (Get-EC2Instance -InstanceId $InstanceID).Instances
 ($EC2.InstanceType).Value
 $EC2.State.Name.Value.ToUpper()
+
+
+$Name   = ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Name).Value
+$Owner  =  ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Owner).Value
+
+$EC2Instance = [PSCustomObject]@{
+
+    Name        = ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Name).Value
+    $Owner      = ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Owner).Value
+    State       = $($EC2.State.Name.Value.ToUpper())
+    Type        = $EC2.InstanceType.Value
+    InstanceId  = $EC2.InstanceId
+    KeyName     = $EC2.KeyName
+    LaunchTime  = $EC2.LaunchTime
+}
+
+$EC2.PublicDnsName | gm
