@@ -45,44 +45,100 @@ function handler
     
     #-----------------------------------------------------------------------------------------------------------------------------------------------
     # Send Teams Notification
-    
-    New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
-        New-AdaptiveContainer {
-    
-            New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server $($EC2Instance.Name) $($EC2Instance.State)" -Color Accent -HorizontalAlignment Center
-            New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
+
+    switch ($($EC2Instance.State)) {
+        PENDING { 
+            New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
+                New-AdaptiveContainer {
             
+                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server $($EC2Instance.Name) Started up" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
+                    New-AdaptiveFactSet {
+                
+                        New-AdaptiveFact -Title 'State' -Value $($EC2Instance.State)
+                        
+                    } -Separator Medium 
+                    
+                }
+            }
+         }
+        RUNNING {
+
+            New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
+                New-AdaptiveContainer {
+            
+                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server $($EC2Instance.Name) $($EC2Instance.State)" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
+                    
+                }
+            } -Action {
+                New-AdaptiveAction -Title "Server Details" -Body   {
+                    New-AdaptiveTextBlock -Text "Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveFactSet {
+                        
+                        New-AdaptiveFact -Title 'Name' -Value $EC2Instance.Name
+                        New-AdaptiveFact -Title 'Owner' -Value $EC2Instance.Owner
+                        New-AdaptiveFact -Title 'State' -Value $EC2Instance.State
+                        New-AdaptiveFact -Title 'Type' -Value $EC2Instance.Type
+                        New-AdaptiveFact -Title 'InstanceId' -Value $EC2Instance.InstanceId
+                        New-AdaptiveFact -Title 'KeyName' -Value $EC2Instance.KeyName
+                        New-AdaptiveFact -Title 'LaunchTime' -Value $EC2Instance.LaunchTime
+                    } -Separator Medium 
+                } 
+                New-AdaptiveAction -Title "Lambda Details" -Body   {
+                    New-AdaptiveTextBlock -Text "Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveFactSet {
+                        
+                        New-AdaptiveFact -Title "LogStream" -Value $LambdaCon.LogStream
+                        New-AdaptiveFact -Title "LogGroup" -Value $LambdaCon.LogGroup
+                        New-AdaptiveFact -Title "Function" -Value $LambdaCon.Function
+                        New-AdaptiveFact -Title "Time" -Value $LambdaCon.Time
+                        New-AdaptiveFact -Title "Memory(MB)" -Value $LambdaCon.Memory 
+                        
+                    } -Separator Medium 
+                }
+                
+            }
+
         }
-    } -Action {
-        New-AdaptiveAction -Title "Server Details" -Body   {
-            New-AdaptiveTextBlock -Text "Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
-            New-AdaptiveFactSet {
+        STOPPING {
+
+            New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
+                New-AdaptiveContainer {
+            
+                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server $($EC2Instance.Name) is shutting down" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
+                    New-AdaptiveFactSet {
                 
-                New-AdaptiveFact -Title 'Name' -Value $EC2Instance.Name
-                New-AdaptiveFact -Title 'Owner' -Value $EC2Instance.Owner
-                New-AdaptiveFact -Title 'State' -Value $EC2Instance.State
-                New-AdaptiveFact -Title 'Type' -Value $EC2Instance.Type
-                New-AdaptiveFact -Title 'InstanceId' -Value $EC2Instance.InstanceId
-                New-AdaptiveFact -Title 'KeyName' -Value $EC2Instance.KeyName
-                New-AdaptiveFact -Title 'LaunchTime' -Value $EC2Instance.LaunchTime
-            } -Separator Medium 
-        } 
-        New-AdaptiveAction -Title "Lambda Details" -Body   {
-            New-AdaptiveTextBlock -Text "Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
-            New-AdaptiveFactSet {
-                
-                New-AdaptiveFact -Title "LogStream" -Value $LambdaCon.LogStream
-                New-AdaptiveFact -Title "LogGroup" -Value $LambdaCon.LogGroup
-                New-AdaptiveFact -Title "Function" -Value $LambdaCon.Function
-                New-AdaptiveFact -Title "Time" -Value $LambdaCon.Time
-                New-AdaptiveFact -Title "Memory(MB)" -Value $LambdaCon.Memory 
-                
-            } -Separator Medium 
+                        New-AdaptiveFact -Title 'State' -Value $($EC2Instance.State)
+                        
+                    } -Separator Medium 
+                    
+                }
+            }
+
         }
-        
+        STOPPED {
+
+            New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
+                New-AdaptiveContainer {
+            
+                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server $($EC2Instance.Name) Shut Down" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
+                    New-AdaptiveFactSet {
+                
+                        New-AdaptiveFact -Title 'State' -Value $($EC2Instance.State)
+                        
+                    } -Separator Medium 
+                    
+                }
+            }
+
+        }
     }
-       
-    #-----------------------------------------------------------------------------------------------------------------------------------------------
     
+    
+    
+    #-----------------------------------------------------------------------------------------------------------------------------------------------
     
 }
