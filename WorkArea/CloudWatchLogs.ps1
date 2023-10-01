@@ -49,4 +49,5 @@ $EC2Instance = [PSCustomObject]@{
     LaunchTime  = $EC2.LaunchTime
 }
 
-$EC2.PublicDnsName | gm
+StartedParam        = "/prod/ILT-Elasticity/Started/" + ($env:COMPUTERNAME).ToLower()
+Get-SSMParameter -Name $AWS.StartedParam
