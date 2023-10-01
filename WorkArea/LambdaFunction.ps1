@@ -52,13 +52,13 @@ function handler
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
-                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "$($EC2Instance.Name) - Server Started Up" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server Started Up - $($EC2Instance.Name)" -Color Accent -HorizontalAlignment Center
                     New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
                     New-AdaptiveFactSet {
                 
-                        New-AdaptiveFact -Title 'State' -Value $($EC2Instance.State)
+                        New-AdaptiveFact -Title 'Server State' -Value $($EC2Instance.State)
                         
-                    } -Separator Medium 
+                    } -Separator Medium
                     
                 }
             }
@@ -69,13 +69,13 @@ function handler
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
-                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server $($EC2Instance.Name) $($EC2Instance.State)" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server Running - $($EC2Instance.Name) $($EC2Instance.State)" -Color Accent -HorizontalAlignment Center
                     New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
                     
                 }
             } -Action {
                 New-AdaptiveAction -Title "Server Details" -Body   {
-                    New-AdaptiveTextBlock -Text "Server Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Text "EC2 Server Details" -Weight Bolder -Size Large -Color Accent #-HorizontalAlignment Center
                     New-AdaptiveFactSet {
                         
                         New-AdaptiveFact -Title 'Name' -Value $EC2Instance.Name
@@ -109,11 +109,11 @@ function handler
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
-                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server $($EC2Instance.Name) is shutting down" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server Shutting Down - $($EC2Instance.Name)" -Color Accent -HorizontalAlignment Center
                     New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
                     New-AdaptiveFactSet {
                 
-                        New-AdaptiveFact -Title 'State' -Value $($EC2Instance.State)
+                        New-AdaptiveFact -Title 'Server State' -Value $($EC2Instance.State)
                         
                     } -Separator Medium 
                     
@@ -127,11 +127,11 @@ function handler
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
-                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text " $($EC2Instance.Name) - Server Shut Down" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server Shut Down - $($EC2Instance.Name)" -Color Accent -HorizontalAlignment Center
                     New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
                     New-AdaptiveFactSet {
                 
-                        New-AdaptiveFact -Title 'State' -Value $($EC2Instance.State)
+                        New-AdaptiveFact -Title 'Server State' -Value $($EC2Instance.State)
                         
                     } -Separator Medium 
                     
@@ -140,8 +140,6 @@ function handler
 
         }
     }
-    
-    
     
     #-----------------------------------------------------------------------------------------------------------------------------------------------
     
