@@ -22,7 +22,7 @@ function handler
     $InstanceID = $(([regex]::Matches("$($LambdaInput.resources)", '\w+\W+\w+$')).Value)
     $EC2 =  (Get-EC2Instance -InstanceId $InstanceID).Instances
     
-    $EC2Instance = [PSCustomObject]@{
+    $EC2Instance    = [PSCustomObject]@{
 
         Name        = ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Name).Value
         Owner       = ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Owner).Value
@@ -33,7 +33,7 @@ function handler
         LaunchTime  = $EC2.LaunchTime
     }
     
-    $LambdaCon = [PSCustomObject]@{
+    $LambdaCon      = [PSCustomObject]@{
 
         LogStream   = $LambdaContext.LogStreamName
         LogGroup    = $LambdaContext.LogGroupName
@@ -47,11 +47,12 @@ function handler
     # Send Teams Notification
 
     switch ($($EC2Instance.State)) {
+
         PENDING { 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
-                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server $($EC2Instance.Name) Started up" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "$($EC2Instance.Name) - Server Started Up" -Color Accent -HorizontalAlignment Center
                     New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
                     New-AdaptiveFactSet {
                 
@@ -62,6 +63,7 @@ function handler
                 }
             }
          }
+
         RUNNING {
 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
@@ -73,7 +75,7 @@ function handler
                 }
             } -Action {
                 New-AdaptiveAction -Title "Server Details" -Body   {
-                    New-AdaptiveTextBlock -Text "Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Text "Server Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
                     New-AdaptiveFactSet {
                         
                         New-AdaptiveFact -Title 'Name' -Value $EC2Instance.Name
@@ -86,7 +88,7 @@ function handler
                     } -Separator Medium 
                 } 
                 New-AdaptiveAction -Title "Lambda Details" -Body   {
-                    New-AdaptiveTextBlock -Text "Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Text "Lambda Details" -Weight Bolder -Size Large -Color Accent -HorizontalAlignment Center
                     New-AdaptiveFactSet {
                         
                         New-AdaptiveFact -Title "LogStream" -Value $LambdaCon.LogStream
@@ -101,6 +103,7 @@ function handler
             }
 
         }
+
         STOPPING {
 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
@@ -118,12 +121,13 @@ function handler
             }
 
         }
+
         STOPPED {
 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
-                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text "Server $($EC2Instance.Name) Shut Down" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Size ExtraLarge -Weight Bolder -Text " $($EC2Instance.Name) - Server Shut Down" -Color Accent -HorizontalAlignment Center
                     New-AdaptiveTextBlock -Text "$((Get-Date).GetDateTimeFormats()[12])" -Subtle -HorizontalAlignment Center -Spacing None
                     New-AdaptiveFactSet {
                 
