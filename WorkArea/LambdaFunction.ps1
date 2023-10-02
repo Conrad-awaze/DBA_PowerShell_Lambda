@@ -1,6 +1,6 @@
 Write-Host "Importing Modules"
-Import-Module "AWS.Tools.Common",'AWS.Tools.DynamoDBv2','AWS.Tools.Lambda','PSTeams','AWS.Tools.EC2'
-
+Import-Module "AWS.Tools.Common",'AWS.Tools.DynamoDBv2','AWS.Tools.Lambda','PSTeams','AWS.Tools.EC2','AWS.Tools.SimpleSystemsManagement'
+Install-Module AWS.Tools.Installer ; Update-AWSToolsModule
 function handler
 {
     [cmdletbinding()]
@@ -13,20 +13,20 @@ function handler
         
         [string]$GUID1  = '10ed1b71-1a9f-4427-a5cb-8ffc041487cd@bd846b68-132a-4a46-b1e7-d090e168c0a2',
         
-        [string]$GUID2  = '255b3917962f40cb872ad6bac331d797/34d83ea3-495b-45f0-9efa-2a30f32d086e',
-        
-        [string]$URI    = "https://awazecom.webhook.office.com/webhookb2/$($GUID1)/IncomingWebhook/$($GUID2)"
+        [string]$GUID2  = '255b3917962f40cb872ad6bac331d797/34d83ea3-495b-45f0-9efa-2a30f32d086e'
         
     )
     
-    $InstanceID = $(([regex]::Matches("$($LambdaInput.resources)", '\w+\W+\w+$')).Value)
-    $EC2 =  (Get-EC2Instance -InstanceId $InstanceID).Instances
+    $URI            = "https://awazecom.webhook.office.com/webhookb2/$($GUID1)/IncomingWebhook/$($GUID2)"
+    
+    $InstanceID     = $(([regex]::Matches("$($LambdaInput.resources)", '\w+\W+\w+$')).Value)
+    $EC2            =  (Get-EC2Instance -InstanceId $InstanceID).Instances
     
     $EC2Instance    = [PSCustomObject]@{
 
         Name        = ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Name).Value
         Owner       = ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Owner).Value
-        State       = $($EC2.State.Name.Value.ToUpper())
+        State       = $EC2.State.Name.Value.ToUpper()
         Type        = $EC2.InstanceType.Value
         InstanceId  = $EC2.InstanceId
         KeyName     = $EC2.KeyName
@@ -38,7 +38,7 @@ function handler
         LogStream   = $LambdaContext.LogStreamName
         LogGroup    = $LambdaContext.LogGroupName
         Function    = $LambdaContext.FunctionName
-        Time        = $($LambdaInput.time)
+        Time        = $LambdaInput.time
         Memory      = $LambdaContext.MemoryLimitInMB
 
     }
@@ -143,4 +143,7 @@ function handler
     
     #-----------------------------------------------------------------------------------------------------------------------------------------------
     
+    Get-Command -Module 'AWS.Tools.EC2'
+
+    Get-Module -ListAvailable
 }
