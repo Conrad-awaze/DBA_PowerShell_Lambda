@@ -144,3 +144,74 @@ function handler
     #-----------------------------------------------------------------------------------------------------------------------------------------------
     
 }
+
+
+
+Get-Command -Module 'AWS.Tools.SimpleSystemsManagement'
+ 
+
+
+
+
+$InstanceID = 'i-0ca34a3d3c6a8219789'
+
+$EC2InstanceName = 'DBA_Server'
+$AWS = @{
+
+    # InstanceID          = get-ec2instancemetadata -Category instanceid
+    Hostname            = ($EC2InstanceName).ToLower()
+    # source              = "ec2.events"
+    # NameDetails         = "/prod/ILT-Elasticity/Replicated/$EC2InstanceName"
+    StartedParam        = "/prod/ILT-Elasticity/Started/$(($EC2InstanceName).ToLower())"
+    OfflineParam        = "/prod/ILT-Elasticity/offline-ilts/$(($EC2InstanceName).ToLower())"
+    StartedforReplParam = "/prod/ILT-Elasticity/StartedforReplicationCatchup/" + ($EC2InstanceName).ToLower()
+    PatchingParam       = "/prod/ILT-Elasticity/Patching/$(($EC2InstanceName).ToLower())"
+    DescriptionDetails  = "Replication is now completed on $EC2InstanceName. This Parameter will be deleted by ILT-Elasticity once the server has been added to the ILT Target Group"
+    OfflineDescr        = "Replication is now completed on $EC2InstanceName and the server has been shutdown. This Parameter will be deleted by ILT-Elasticity once the server has been brought up once again"
+}
+
+# Write-SSMParameter -Name $AWS.StartedParam -Type String -Description $AWS.DescriptionDetails -Value $InstanceID -Overwrite $true
+# Write-SSMParameter -Name $AWS.PatchingParam -Type String -Description $AWS.DescriptionDetails -Value $InstanceID -Overwrite $true
+
+$StartedParameter = " "
+try {
+    $StartedParameter   =  Get-SSMParameter -Name $AWS.StartedParam
+}
+catch {
+
+    Write-Host "No 'Started' Parameter Found"
+    Write-Host "$_"
+}
+
+try {
+    $PatchingParameter   =  Get-SSMParameter -Name $AWS.PatchingParam
+}
+catch {
+
+    Write-Host "No 'Patching' Parameter Found"
+    Write-Host "$_"
+}
+
+$ParameterList = (Get-SSMParameterList).Name
+
+if ($ParameterList.Contains($StartedParameter.Name)) {
+    
+    $StartupType = "Standard"
+    Write-Host "Setting Startup Type to 'Standard' due to presence of Parameter $($AWS.StartedParam)"
+
+}elseif ($ParameterList.Contains($PatchingParameter.Name)) {
+
+    $StartupType = "Patching"
+    Write-Host "Setting Startup Type to 'Patching' due to presence of Parameter $($AWS.PatchingParam)"
+}else {
+
+    Write-Host "No Parameters found"
+}
+
+$StartupType
+
+Remove-SSMParameter -Name $AWS.StartedParam -Confirm:$false
+Remove-SSMParameter -Name $AWS.PatchingParam -Confirm:$false
+
+
+
