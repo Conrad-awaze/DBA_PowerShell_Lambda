@@ -1,6 +1,6 @@
 Write-Host "Importing Modules"
 Import-Module "AWS.Tools.Common",'AWS.Tools.DynamoDBv2','AWS.Tools.Lambda','PSTeams','AWS.Tools.EC2','AWS.Tools.SimpleSystemsManagement'
-Install-Module AWS.Tools.Installer ; Update-AWSToolsModule
+
 function handler
 {
     [cmdletbinding()]
@@ -143,7 +143,4 @@ function handler
     
     #-----------------------------------------------------------------------------------------------------------------------------------------------
     
-    Get-Command -Module 'AWS.Tools.EC2'
-
-    Get-Module -ListAvailable
 }
