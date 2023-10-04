@@ -178,9 +178,9 @@ function handler
                     New-AdaptiveTextBlock -Text "Lambda Details" -Weight Bolder -Size Large -Color Accent # -HorizontalAlignment Center
                     New-AdaptiveFactSet {
                         
-                        New-AdaptiveFact -Title "LogStream" -Value $LambdaCon.LogStream
-                        New-AdaptiveFact -Title "LogGroup" -Value $LambdaCon.LogGroup
                         New-AdaptiveFact -Title "Function" -Value $LambdaCon.Function
+                        New-AdaptiveFact -Title "LogGroup" -Value $LambdaCon.LogGroup
+                        New-AdaptiveFact -Title "LogStream" -Value $LambdaCon.LogStream
                         New-AdaptiveFact -Title "Time" -Value $LambdaCon.Time
                         New-AdaptiveFact -Title "Memory(MB)" -Value $LambdaCon.Memory 
                         
