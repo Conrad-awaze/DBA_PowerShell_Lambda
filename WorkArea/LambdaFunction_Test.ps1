@@ -4,7 +4,7 @@ Get-Command -Module 'AWS.Tools.SimpleSystemsManagement'
 $InstanceID  =  'i-0b8ba7a0d4f6a1608'
 $EC2            =  (Get-EC2Instance -InstanceId $InstanceID).Instances
 ($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq state).Value
-$EC2 | gm
+$EC2 | Get-Member
 $EC2.Tags
 
 $EC2Instance = 'VRUK-A-ILTSQL30'
@@ -25,7 +25,7 @@ $AWS = @{
 
 
 $ParameterList = (Get-SSMParameterList).Name
-
+$ParameterList
 # Write-SSMParameter -Name $AWS.StartedParam -Type String -Description $AWS.DescriptionDetails -Value $InstanceID -Overwrite $true
 # Write-SSMParameter -Name $AWS.PatchingParam -Type String -Description $AWS.DescriptionDetails -Value $InstanceID -Overwrite $true
 
