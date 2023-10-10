@@ -1,4 +1,5 @@
 Import-Module AWS.Tools.DynamoDBv2, AWS.Tools.EC2
+Get-Module -ListAvailable
 
 
 $InstanceID     =  'i-0b8ba7a0d4f6a1608'

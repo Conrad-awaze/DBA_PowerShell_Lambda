@@ -8,7 +8,7 @@ $layersRoot     = Join-Path -Path $PSScriptRoot -ChildPath 'layers'
 ####################
 $runtimeLayerPath   = Join-Path -Path $layersRoot -ChildPath 'runtimeLayer'
 $runtimeBuildScript = [System.IO.Path]::Combine('powershell-runtime', 'build-PwshRuntimeLayer.ps1')
-& $runtimeBuildScript -PwshArchitecture 'x64' -LayerPath $runtimeLayerPath
+# & $runtimeBuildScript -PwshArchitecture 'x64' -LayerPath $runtimeLayerPath
 
 #################
 # AWSToolsLayer #
@@ -18,7 +18,7 @@ $AWS_Modules = @(
     'AWS.Tools.Common','AWS.Tools.AutoScaling','AWS.Tools.CloudFormation','AWS.Tools.CloudWatch',
     'AWS.Tools.CloudWatchLogs','AWS.Tools.DynamoDBv2','AWS.Tools.EBS','AWS.Tools.EC2','AWS.Tools.EventBridge',
     'AWS.Tools.Lambda','AWS.Tools.S3','AWS.Tools.SQS','AWS.Tools.StepFunctions','AWS.Tools.SimpleSystemsManagement',
-    'AWS.Tools.Cloud9'
+    'AWS.Tools.Cloud9','AWS.Tools.IdentityManagement','AWS.Tools.IAMRolesAnywhere','AWS.Tools.IdentityStore'
 
 )
 $awsToolsLayerPath = Join-Path -Path $layersRoot -ChildPath 'modulesLayer'

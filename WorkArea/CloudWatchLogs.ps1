@@ -51,3 +51,11 @@ $EC2Instance = [PSCustomObject]@{
 
 StartedParam        = "/prod/ILT-Elasticity/Started/" + ($env:COMPUTERNAME).ToLower()
 Get-SSMParameter -Name $AWS.StartedParam
+
+
+Install-Module -Name 'AWS.Tools.IdentityManagement' -Scope AllUsers -Force
+Import-Module AWS.Tools.IdentityManagement
+
+Get-Module -ListAvailable
+
+Get-Command -Module 'AWS.Tools.IdentityManagement'
