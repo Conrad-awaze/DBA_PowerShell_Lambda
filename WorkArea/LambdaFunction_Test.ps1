@@ -7,16 +7,25 @@ Import-Module 'AWS.Tools.SimpleSystemsManagement'
 $InstancesRunning = (Get-EC2Instance -Filter @{Name = "tag:Name"; Values = "VRUK-*"},@{Name = "instance-state-name"; Values = "running"}).Instances
 $InstancesStopped = (Get-EC2Instance -Filter @{Name = "tag:Name"; Values = "VRUK-*"},@{Name = "instance-state-name"; Values = "stopped"}).Instances
 
+if ($InstancesStopped) {
 
-$Instances.State
-$InstanceIDs = (Get-EC2Instance).Instances.InstanceID
+    foreach ($Inst in $InstancesStopped) {
 
-foreach ($ID in $InstanceIDs) {
-
-    $EC2    =  (Get-EC2Instance -InstanceId $ID).Instances
-    Write-Host "$(($EC2 | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Name).Value)"
-
+        Write-Host "Instance Stopped - $(($Inst | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Name).Value)"
+    
+    }
 }
+
+if ($InstancesRunning) {
+    
+    foreach ($Inst in $InstancesRunning) {
+
+        Write-Host "Instance Running - $(($Inst | Select-Object -ExpandProperty Tags | Where-Object -Property Key -eq Name).Value)"
+    
+    }
+}
+
+
 
 
 Get-Command -Module 'AWS.Tools.SimpleSystemsManagement'
