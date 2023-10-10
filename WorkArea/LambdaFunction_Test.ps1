@@ -7,6 +7,36 @@ Import-Module 'AWS.Tools.SimpleSystemsManagement'
 $InstancesRunning = (Get-EC2Instance -Filter @{Name = "tag:Name"; Values = "VRUK-*"},@{Name = "instance-state-name"; Values = "running"}).Instances
 $InstancesStopped = (Get-EC2Instance -Filter @{Name = "tag:Name"; Values = "VRUK-*"},@{Name = "instance-state-name"; Values = "stopped"}).Instances
 
+
+# https://medium.com/@moorichardmoo/filtering-aws-instances-using-multiple-tags-38fa8734b5f8
+
+$filterRunning =@(
+    @{
+        name = 'tag:Name'
+        values = "VRUK-*"
+    },
+    @{
+        Name='instance-state-name'
+        values = 'running'
+    }
+)
+
+$filterStopped =@(
+    @{
+        name = 'tag:Name'
+        values = "VRUK-*"
+    },
+    @{
+        Name='instance-state-name'
+        values = 'stopped'
+    }
+)
+
+
+$InstancesRunning = (Get-EC2Instance -Filter $filterRunning).Instances
+$InstancesStopped = (Get-EC2Instance -Filter $filterStopped).Instances
+
+
 if ($InstancesStopped) {
 
     foreach ($Inst in $InstancesStopped) {
