@@ -17,6 +17,44 @@ function handler
         
     )
     
+    #region DynamoDB Table Check and Setup
+
+        $TableName = 'DBA_EC2StateMonitor'
+
+        # Get current list of tables
+        $TableList  = Get-DDBTables
+
+        if ($TableList -contains $TableName) {
+            Write-Host "DynamoDB - Table [$TableName] already exists"
+        }
+        else {
+
+            Write-Host "DynamoDB - Creating table - [$TableName]...!!!!"
+
+            # Create KeySchema
+            $Schema = New-DDBTableSchema
+            $Schema |   Add-DDBKeySchema -KeyName "PK" -KeyDataType "S" -KeyType HASH | 
+                        Add-DDBKeySchema -KeyName "SK" -KeyType RANGE -KeyDataType "S" 
+
+            # Creat New Table
+            $TableDetails = New-DDBTable -TableName $TableName -Schema $Schema -ReadCapacity 5 -WriteCapacity 5
+
+            # Confirm Table is active
+            while ((Get-DDBTable -TableName $TableName).TableStatus.Value -ne 'Active') {
+
+                Start-Sleep 5
+                $TableStatus = (Get-DDBTable -TableName $TableName).TableStatus.Value
+            
+                switch ($TableStatus) {
+                    Active { Write-Host "DynamoDB - Table Status - $TableStatus" }
+                    Default {Write-Host "DynamoDB - Table Status - $TableStatus"}
+                }
+            }
+        }
+
+    #endregion
+
+    
     $URI            = "https://awazecom.webhook.office.com/webhookb2/$($GUID1)/IncomingWebhook/$($GUID2)"
     
     $InstanceID     = $(([regex]::Matches("$($LambdaInput.resources)", '\w+\W+\w+$')).Value)
@@ -111,6 +149,23 @@ function handler
         
         PENDING { 
             
+            $Event = @{
+                
+                PK          = "$(Get-Date -format yyyy-MM-dd)"
+                SK          = "$($EC2Instance.Name)#$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")"
+                EventTime   = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
+                EC2Instance = $($EC2Instance.Name)
+                State       = $($EC2Instance.State)
+                StartupType = $StartupType
+                LogGroup    = $($LambdaCon.LogGroup)
+                LogStream   = $($LambdaCon.LogStream)
+                # LaunchTime  = $($EC2Instance.LaunchTime)
+                InstanceId  = $($EC2Instance.InstanceId)
+                
+          } | ConvertTo-DDBItem
+      
+        Set-DDBItem -TableName $TableName -Item $Event
+            
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
                     
@@ -141,6 +196,23 @@ function handler
         }
 
         RUNNING {
+            
+            $Event = @{
+                
+                PK          = "$(Get-Date -format yyyy-MM-dd)"
+                SK          = "$($EC2Instance.Name)#$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")"
+                EventTime   = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
+                EC2Instance = $($EC2Instance.Name)
+                State       = $($EC2Instance.State)
+                StartupType = $StartupType
+                LogGroup    = $($LambdaCon.LogGroup)
+                LogStream   = $($LambdaCon.LogStream)
+                # LaunchTime  = $($EC2Instance.LaunchTime)
+                InstanceId  = $($EC2Instance.InstanceId)
+                
+            } | ConvertTo-DDBItem
+          
+            Set-DDBItem -TableName $TableName -Item $Event
 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
@@ -187,6 +259,23 @@ function handler
         }
 
         STOPPING {
+            
+            $Event = @{
+                
+                PK          = "$(Get-Date -format yyyy-MM-dd)"
+                SK          = "$($EC2Instance.Name)#$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")"
+                EventTime   = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
+                EC2Instance = $($EC2Instance.Name)
+                State       = $($EC2Instance.State)
+                StartupType = $StartupType
+                LogGroup    = $($LambdaCon.LogGroup)
+                LogStream   = $($LambdaCon.LogStream)
+                # LaunchTime  = $($EC2Instance.LaunchTime)
+                InstanceId  = $($EC2Instance.InstanceId)
+                
+            } | ConvertTo-DDBItem
+          
+            Set-DDBItem -TableName $TableName -Item $Event
 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
@@ -205,6 +294,23 @@ function handler
         }
 
         STOPPED {
+            
+            $Event = @{
+                
+                PK          = "$(Get-Date -format yyyy-MM-dd)"
+                SK          = "$($EC2Instance.Name)#$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")"
+                EventTime   = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
+                EC2Instance = $($EC2Instance.Name)
+                State       = $($EC2Instance.State)
+                StartupType = $StartupType
+                LogGroup    = $($LambdaCon.LogGroup)
+                LogStream   = $($LambdaCon.LogStream)
+                # LaunchTime  = $($EC2Instance.LaunchTime)
+                InstanceId  = $($EC2Instance.InstanceId)
+                
+            } | ConvertTo-DDBItem
+          
+            Set-DDBItem -TableName $TableName -Item $Event
 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {

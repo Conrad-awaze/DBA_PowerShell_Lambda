@@ -1,6 +1,7 @@
 Remove-Module 'AWS.Tools.EC2','AWS.Tools.SimpleSystemsManagement','AWS.Tools.Common'
 Import-Module 'AWS.Tools.EC2'
 Import-Module 'AWS.Tools.SimpleSystemsManagement'
+Import-Module AWS.Tools.DynamoDBv2
 
 # https://docs.aws.amazon.com/powershell/latest/reference/items/Get-EC2Instance.html
 
@@ -58,9 +59,9 @@ if ($InstancesRunning) {
 
 
 
-Get-Command -Module 'AWS.Tools.SimpleSystemsManagement'
+Get-Command -Module 'AWS.Tools.DynamoDBv2'
 
-$EC2Instance = 'VRUK-A-ILTSQL31'
+$EC2Instance = 'VRUK-A-ILTSQL30'
 $InstanceID = 'i-0b8ba7a0d4f6a1608'
 
 $AWS = @{
@@ -94,6 +95,41 @@ Get-Help Get-EC2Instance -Examples
  
 
 Get-EC2Tag -Filter @{Name="Key";Value="VRUK-A-ILTSQL31"} 
+
+
+
+
+
+# Get current list of tables
+$TableList  = Get-DDBTables
+
+if ($TableList -contains $TableName) {
+    Write-DaLogEvent $logfile "DynamoDB - Table [$TableName] already exists"
+}
+else {
+
+    Write-DaLogEvent $logfile "DynamoDB - Creating table - [$TableName]...!!!!"
+
+    # Create KeySchema
+    $Schema = New-DDBTableSchema
+    $Schema |   Add-DDBKeySchema -KeyName "PK" -KeyDataType "S" -KeyType HASH | 
+                Add-DDBKeySchema -KeyName "SK" -KeyType RANGE -KeyDataType "S" 
+
+    # Creat New Table
+    $TableDetails = New-DDBTable -TableName $TableName -Schema $Schema -ReadCapacity 5 -WriteCapacity 5
+
+    # Confirm Table is active
+    while ((Get-DDBTable -TableName $TableName).TableStatus.Value -ne 'Active') {
+
+        Start-Sleep 5
+        $TableStatus = (Get-DDBTable -TableName $TableName).TableStatus.Value
+    
+        switch ($TableStatus) {
+            Active { Write-DaLogEvent $logfile "DynamoDB - Table Status - $TableStatus" }
+            Default {Write-DaLogEvent $logfile "DynamoDB - Table Status - $TableStatus"}
+        }
+    }
+}
 
 
 
