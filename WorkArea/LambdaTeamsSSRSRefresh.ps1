@@ -1,5 +1,5 @@
 Write-Host "Importing Modules"
-Import-Module "AWS.Tools.Common",'PSTeams'
+Import-Module 'PSTeams'
 
 function handler
 {
@@ -85,6 +85,7 @@ function handler
                     New-AdaptiveFact -Title 'Selector Reports' -Value "Reports published - $($LambdaInput.PublishedSelectorReports.Count)"
                     New-AdaptiveFact -Title 'Detail Reports' -Value "Reports published - $($LambdaInput.PublishedDetailReports.Count)"
                     New-AdaptiveFact -Title 'DataSource' -Value "$($LambdaInput.DataSourceFolder)"
+                    New-AdaptiveFact -Title 'SDLC Server' -Value "$($LambdaInput.ReportServerURLSDLC)"
                     
                 } -Separator Medium
                 New-AdaptiveTextBlock -Text "Refresh Parameters" -Weight Default -Size Large -Color Accent -HorizontalAlignment Left
@@ -92,6 +93,7 @@ function handler
                     
                     New-AdaptiveFact -Title 'Root Folder' -Value "$($LambdaInput.BreaseRootFolder)"
                     New-AdaptiveFact -Title 'DataSource' -Value "$($LambdaInput.DataSourceFolder)"
+                    New-AdaptiveFact -Title 'Live Server' -Value "$($LambdaInput.ReportServerURLLive)"
                     
                     
                 } -Separator Medium

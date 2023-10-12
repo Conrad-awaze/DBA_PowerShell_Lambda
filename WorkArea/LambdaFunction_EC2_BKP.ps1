@@ -90,7 +90,7 @@ function handler
 
     if ($ParameterList.Contains($StartedParameter.Name)) {
         
-        $StartupType = "Standard"
+        $StartupType = "AutoScaling"
         Write-Host "Setting Startup Type to 'Standard' due to presence of Parameter $($AWS.StartedParam)"
 
     }elseif ($ParameterList.Contains($PatchingParameter.Name)) {
@@ -116,21 +116,15 @@ function handler
                     
                     switch ($StartupType) {
                         
-                        Standard { 
-
-                            New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server started up by AutoScaling" -Color Accent -HorizontalAlignment Center
-                            
-                        }
-                        
-                        Patching {
-
-                            New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server started up for Patching" -Color Accent -HorizontalAlignment Center
-                            
-                        }
-                        
                         Manual {
                             
                             New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - No parameters found. Manual Start Up" -Color Accent -HorizontalAlignment Center
+                        }
+                        
+                        Default { 
+
+                            New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server Started Up [$StartupType]" -Color Accent -HorizontalAlignment Center
+                            
                         }
                     }
                     
@@ -151,7 +145,7 @@ function handler
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
-                    New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server start up completed " -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server Start Up Completed [$StartupType]" -Color Accent -HorizontalAlignment Center
                     New-AdaptiveTextBlock -Text "$(get-date -format "dddd, dd MMMM yyyy HH:mm:ss")" -Subtle -HorizontalAlignment Center -Spacing None -Color Good
                     
                 }
@@ -197,7 +191,7 @@ function handler
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
-                    New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server shut down started" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server Shut Down Started" -Color Accent -HorizontalAlignment Center
                     New-AdaptiveTextBlock -Text "$(get-date -format "dddd, dd MMMM yyyy HH:mm:ss")" -Subtle -HorizontalAlignment Center -Spacing None -Color Good 
                     New-AdaptiveFactSet {
                 
@@ -215,7 +209,7 @@ function handler
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
-                    New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server shut down completed" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server Shut Down Completed" -Color Accent -HorizontalAlignment Center
                     New-AdaptiveTextBlock -Text "$(get-date -format "dddd, dd MMMM yyyy HH:mm:ss")" -Subtle -HorizontalAlignment Center -Spacing None -Color Good
                     New-AdaptiveFactSet {
                 

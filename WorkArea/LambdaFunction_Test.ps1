@@ -60,7 +60,8 @@ if ($InstancesRunning) {
 
 Get-Command -Module 'AWS.Tools.SimpleSystemsManagement'
 
-$EC2Instance = 'VRUK-A-ILTSQL30'
+$EC2Instance = 'VRUK-A-ILTSQL31'
+$InstanceID = 'i-0b8ba7a0d4f6a1608'
 
 $AWS = @{
 
