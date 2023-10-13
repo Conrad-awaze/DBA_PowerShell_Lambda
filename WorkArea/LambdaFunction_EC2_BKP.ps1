@@ -17,44 +17,6 @@ function handler
         
     )
     
-    #region DynamoDB Table Check and Setup
-
-        $TableName = 'DBA_EC2StateMonitor'
-
-        # Get current list of tables
-        $TableList  = Get-DDBTables
-
-        if ($TableList -contains $TableName) {
-            Write-Host "DynamoDB - Table [$TableName] already exists"
-        }
-        else {
-
-            Write-Host "DynamoDB - Creating table - [$TableName]...!!!!"
-
-            # Create KeySchema
-            $Schema = New-DDBTableSchema
-            $Schema |   Add-DDBKeySchema -KeyName "PK" -KeyDataType "S" -KeyType HASH | 
-                        Add-DDBKeySchema -KeyName "SK" -KeyType RANGE -KeyDataType "S" 
-
-            # Creat New Table
-            $TableDetails = New-DDBTable -TableName $TableName -Schema $Schema -ReadCapacity 5 -WriteCapacity 5
-
-            # Confirm Table is active
-            while ((Get-DDBTable -TableName $TableName).TableStatus.Value -ne 'Active') {
-
-                Start-Sleep 5
-                $TableStatus = (Get-DDBTable -TableName $TableName).TableStatus.Value
-            
-                switch ($TableStatus) {
-                    Active { Write-Host "DynamoDB - Table Status - $TableStatus" }
-                    Default {Write-Host "DynamoDB - Table Status - $TableStatus"}
-                }
-            }
-        }
-
-    #endregion
-
-    
     $URI            = "https://awazecom.webhook.office.com/webhookb2/$($GUID1)/IncomingWebhook/$($GUID2)"
     
     $InstanceID     = $(([regex]::Matches("$($LambdaInput.resources)", '\w+\W+\w+$')).Value)
@@ -95,9 +57,50 @@ function handler
         OfflineDescr        = "Replication is now completed on $($EC2Instance.Name) and the server has been shutdown. This Parameter will be deleted by ILT-Elasticity once the server has been brought up once again"
     }
     
+    #region DynamoDB Table Check and Setup
+
+        $dynamoDBTableName = 'DBA_EC2StateMonitor'
+
+        # Get current list of tables
+        $TableList  = Get-DDBTables
+
+        if ($TableList -contains $dynamoDBTableName) {
+            
+            Write-Host "DynamoDB - Table [$dynamoDBTableName] already exists"
+        }
+        else {
+
+            Write-Host "DynamoDB - Creating table - [$dynamoDBTableName]...!!!!"
+
+            # Create KeySchema
+            $Schema = New-DDBTableSchema
+            $Schema |   Add-DDBKeySchema -KeyName "PK" -KeyDataType "S" -KeyType HASH | 
+                        Add-DDBKeySchema -KeyName "SK" -KeyType RANGE -KeyDataType "S" 
+
+            # Create New Table
+            $TableDetails = New-DDBTable -TableName $dynamoDBTableName -Schema $Schema -ReadCapacity 5 -WriteCapacity 5
+
+            # Confirm Table is active
+            while ((Get-DDBTable -TableName $dynamoDBTableName).TableStatus.Value -ne 'Active') {
+
+                Start-Sleep 5
+                $TableStatus = (Get-DDBTable -TableName $dynamoDBTableName).TableStatus.Value
+            
+                switch ($TableStatus) {
+                    Active { Write-Host "DynamoDB - Table Status - $TableStatus" }
+                    Default {Write-Host "DynamoDB - Table Status - $TableStatus"}
+                }
+            }
+        }
+
+    #endregion
+    
     #region Parameter Check
     $StartedParameter   = " "
     $PatchingParameter  = " "
+    
+    #---------------------------------------------------------------------------------------------------------------------
+    # Check Parameters
 
     try {
         
@@ -149,7 +152,7 @@ function handler
         
         PENDING { 
             
-            $Event = @{
+            $dynamoDBEvent = @{
                 
                 PK          = "$(Get-Date -format yyyy-MM-dd)"
                 SK          = "$($EC2Instance.Name)#$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")"
@@ -162,9 +165,9 @@ function handler
                 # LaunchTime  = $($EC2Instance.LaunchTime)
                 InstanceId  = $($EC2Instance.InstanceId)
                 
-          } | ConvertTo-DDBItem
+            } | ConvertTo-DDBItem
       
-        Set-DDBItem -TableName $TableName -Item $Event
+            Set-DDBItem -TableName $dynamoDBTableName -Item $dynamoDBEvent
             
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
@@ -197,7 +200,7 @@ function handler
 
         RUNNING {
             
-            $Event = @{
+            $dynamoDBEvent = @{
                 
                 PK          = "$(Get-Date -format yyyy-MM-dd)"
                 SK          = "$($EC2Instance.Name)#$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")"
@@ -212,7 +215,7 @@ function handler
                 
             } | ConvertTo-DDBItem
           
-            Set-DDBItem -TableName $TableName -Item $Event
+            Set-DDBItem -TableName $dynamoDBTableName -Item $dynamoDBEvent
 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
@@ -260,7 +263,7 @@ function handler
 
         STOPPING {
             
-            $Event = @{
+            $dynamoDBEvent = @{
                 
                 PK          = "$(Get-Date -format yyyy-MM-dd)"
                 SK          = "$($EC2Instance.Name)#$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")"
@@ -275,7 +278,7 @@ function handler
                 
             } | ConvertTo-DDBItem
           
-            Set-DDBItem -TableName $TableName -Item $Event
+            Set-DDBItem -TableName $dynamoDBTableName -Item $dynamoDBEvent
 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
@@ -295,7 +298,7 @@ function handler
 
         STOPPED {
             
-            $Event = @{
+            $dynamoDBEvent = @{
                 
                 PK          = "$(Get-Date -format yyyy-MM-dd)"
                 SK          = "$($EC2Instance.Name)#$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")"
@@ -310,7 +313,7 @@ function handler
                 
             } | ConvertTo-DDBItem
           
-            Set-DDBItem -TableName $TableName -Item $Event
+            Set-DDBItem -TableName $dynamoDBTableName -Item $dynamoDBEvent
 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
