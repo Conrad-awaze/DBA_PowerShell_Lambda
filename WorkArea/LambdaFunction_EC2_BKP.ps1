@@ -16,6 +16,8 @@ function handler
         [string]$GUID2  = '6eda4df9f3a246c582a0362c83e0ec58/34d83ea3-495b-45f0-9efa-2a30f32d086e'
         
     )
+
+    $EventType   = "AWS"
     
     $URI            = "https://awazecom.webhook.office.com/webhookb2/$($GUID1)/IncomingWebhook/$($GUID2)"
     
@@ -164,6 +166,8 @@ function handler
                 LogStream   = $($LambdaCon.LogStream)
                 # LaunchTime  = $($EC2Instance.LaunchTime)
                 InstanceId  = $($EC2Instance.InstanceId)
+                EventType   = $EventType
+                
                 
             } | ConvertTo-DDBItem
       
@@ -212,6 +216,7 @@ function handler
                 LogStream   = $($LambdaCon.LogStream)
                 # LaunchTime  = $($EC2Instance.LaunchTime)
                 InstanceId  = $($EC2Instance.InstanceId)
+                EventType   = $EventType
                 
             } | ConvertTo-DDBItem
           
@@ -275,6 +280,7 @@ function handler
                 LogStream   = $($LambdaCon.LogStream)
                 # LaunchTime  = $($EC2Instance.LaunchTime)
                 InstanceId  = $($EC2Instance.InstanceId)
+                EventType   = $EventType
                 
             } | ConvertTo-DDBItem
           
@@ -310,6 +316,7 @@ function handler
                 LogStream   = $($LambdaCon.LogStream)
                 # LaunchTime  = $($EC2Instance.LaunchTime)
                 InstanceId  = $($EC2Instance.InstanceId)
+                EventType   = $EventType
                 
             } | ConvertTo-DDBItem
           
