@@ -5,19 +5,18 @@ function handler
 {
     [cmdletbinding()]
     param(
+        
         [parameter()]
         $LambdaInput,
 
         [parameter()]
-        $LambdaContext,
-        
-        [string]$GUID1  = '10ed1b71-1a9f-4427-a5cb-8ffc041487cd@bd846b68-132a-4a46-b1e7-d090e168c0a2',
-        
-        [string]$GUID2  = '6eda4df9f3a246c582a0362c83e0ec58/34d83ea3-495b-45f0-9efa-2a30f32d086e'
+        $LambdaContext
         
     )
     
-    $URI                = "https://awazecom.webhook.office.com/webhookb2/$($GUID1)/IncomingWebhook/$($GUID2)"
+    $GUID1              = '10ed1b71-1a9f-4427-a5cb-8ffc041487cd@bd846b68-132a-4a46-b1e7-d090e168c0a2'
+    $GUID2              = '6eda4df9f3a246c582a0362c83e0ec58/34d83ea3-495b-45f0-9efa-2a30f32d086e'
+    $URI                = "https://awazecom.webhook.office.com/webhookb2/$GUID1/IncomingWebhook/$GUID2"
     $EventType          = "AWS"
     $dynamoDBTableName  = 'DBA_EC2StateMonitor'
     
@@ -132,6 +131,7 @@ function handler
     
     $ParameterList = (Get-SSMParameterList).Name
 
+    
     if ($ParameterList.Contains($StartedParameter.Name)) {
         
         $StartupType    = "AutoScaling"
@@ -140,14 +140,14 @@ function handler
 
     }elseif ($ParameterList.Contains($PatchingParameter.Name)) {
 
-        $StartupType = "Patching"
+        $StartupType    = "Patching"
         $Parameter      = $($AWS.PatchingParam)
         Write-Host "Setting Startup Type to 'Patching' due to presence of Parameter $($AWS.PatchingParam)"
 
     }else {
     
         $StartupType    = "Manual"
-        $Parameter      = "No Parameter Preset"
+        $Parameter      = "No Parameters Found"
         Write-Host "No Parameters found"
     }
     
@@ -161,7 +161,7 @@ function handler
             $dynamoDBEvent = @{
                 
                 PK              = "$(Get-Date -format yyyy-MM-dd)"
-                SK              = "$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")#$($EC2Instance.Name)"
+                SK              = "$($EC2Instance.State)#$(get-date -format "HH:mm:ss:ms")#$($EC2Instance.Name)"
                 EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
                 EC2Instance     = $($EC2Instance.Name)
                 State           = $($EC2Instance.State)
@@ -212,7 +212,7 @@ function handler
             $dynamoDBEvent = @{
                 
                 PK              = "$(Get-Date -format yyyy-MM-dd)"
-                SK              = "$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")#$($EC2Instance.Name)"
+                SK              = "$($EC2Instance.State)#$(get-date -format "HH:mm:ss:ms")#$($EC2Instance.Name)"
                 EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
                 EC2Instance     = $($EC2Instance.Name)
                 State           = $($EC2Instance.State)
@@ -279,7 +279,7 @@ function handler
             $dynamoDBEvent = @{
                 
                 PK              = "$(Get-Date -format yyyy-MM-dd)"
-                SK              = "$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")#$($EC2Instance.Name)"
+                SK              = "$($EC2Instance.State)#$(get-date -format "HH:mm:ss:ms")#$($EC2Instance.Name)"
                 EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
                 EC2Instance     = $($EC2Instance.Name)
                 State           = $($EC2Instance.State)
@@ -316,7 +316,7 @@ function handler
             $dynamoDBEvent = @{
                 
                 PK              = "$(Get-Date -format yyyy-MM-dd)"
-                SK              = "$($EC2Instance.State)#$(get-date -format "yyyy-MM-dd HH:mm:ss:ms")#$($EC2Instance.Name)"
+                SK              = "$($EC2Instance.State)#$(get-date -format "HH:mm:ss:ms")#$($EC2Instance.Name)"
                 EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
                 EC2Instance     = $($EC2Instance.Name)
                 State           = $($EC2Instance.State)
