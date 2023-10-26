@@ -2,20 +2,13 @@ Import-Module AWS.Tools.DynamoDBv2
 Import-Module 'AWS.Tools.SimpleSystemsManagement'
 Import-Module AWS.Tools.EC2
 
-Get-Command -Module AWS.Tools.EC2
-Get-EC2Instance
-
-
-(Get-SSMParameterList).Name
-
 Get-Command -Module AWS.Tools.DynamoDBv2
 
 Get-DDBTables
 
-Get-DDBTable -TableName DBA_EC2StateMonitor
+Get-Help Invoke-DDBQuery  -Examples
 
-
-$TableName = 'DBA-TestTable'
+$TableName = 'DBA-EC2StateMonitor'
 
 # Create KeySchema
 $Schema = New-DDBTableSchema
@@ -23,6 +16,38 @@ $Schema |   Add-DDBKeySchema -KeyName "PK" -KeyDataType "S" -KeyType HASH |
             Add-DDBKeySchema -KeyName "SK" -KeyType RANGE -KeyDataType "S" 
 
 # Create New Table
-New-DDBTable -TableName $TableName -Schema $Schema -ReadCapacity 5 -WriteCapacity 5
+New-DDBTable -TableName $TableName -Schema $Schema -ReadCapacity 10 -WriteCapacity 5
 
-Remove-DDBTable -TableName $TableName -Force
+Get-DDBTable -TableName $TableName
+
+$dynamoDBEvent = @{
+                
+    PK              = "$(Get-Date -format yyyy-MM-dd)"
+    SK              = "$(get-date -format "HH:mm")"
+    User            = $($env:USERNAME)
+    ComputerName    = $($env:COMPUTERNAME)#
+    Message         = "Test Message - Time: $(get-date -format "HH:mm:ss")"
+    
+} | ConvertTo-DDBItem
+Set-DDBItem -TableName $TableName -Item $dynamoDBEvent
+
+$invokeDDBQuery = @{
+    TableName = $TableName
+    KeyConditionExpression = ' PK = :PK and begins_with(SK, :SK)'
+    ExpressionAttributeValues = @{
+        ':PK' = '2023-10-26'
+        ':SK' = '18'
+    } | ConvertTo-DDBItem
+}
+Invoke-DDBQuery @invokeDDBQuery | ConvertFrom-DDBItem
+
+$key = @{
+
+    PK = "$(Get-Date -format yyyy-MM-dd)"
+    SK = "DTLOW06345#15:33:12:3312"
+
+} | ConvertTo-DDBItem
+Remove-DDBItem -TableName $TableName -Key $key -Confirm:$false
+
+
+# Remove-DDBTable -TableName $TableName -Force
