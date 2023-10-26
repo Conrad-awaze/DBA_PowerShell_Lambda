@@ -33,13 +33,16 @@ Set-DDBItem -TableName $TableName -Item $dynamoDBEvent
 
 $invokeDDBQuery = @{
     TableName = $TableName
+    ProjectionExpression = "PK, SK,Message"
     KeyConditionExpression = ' PK = :PK and begins_with(SK, :SK)'
     ExpressionAttributeValues = @{
         ':PK' = '2023-10-26'
-        ':SK' = '18'
+        ':SK' = '1'
     } | ConvertTo-DDBItem
 }
-Invoke-DDBQuery @invokeDDBQuery | ConvertFrom-DDBItem
+$Results = Invoke-DDBQuery @invokeDDBQuery | ConvertFrom-DDBItem
+$Results.Count
+$Results[0].PK
 
 $key = @{
 
