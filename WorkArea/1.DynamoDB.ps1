@@ -36,7 +36,7 @@ $invokeDDBQuery = @{
     ProjectionExpression = "PK, SK,Message"
     KeyConditionExpression = ' PK = :PK and begins_with(SK, :SK)'
     ExpressionAttributeValues = @{
-        ':PK' = '2023-10-26'
+        ':PK' = "$(Get-Date -format yyyy-MM-dd)"
         ':SK' = '1'
     } | ConvertTo-DDBItem
 }
@@ -47,10 +47,9 @@ $Results[0].PK
 $key = @{
 
     PK = "$(Get-Date -format yyyy-MM-dd)"
-    SK = "DTLOW06345#15:33:12:3312"
+    SK = "11:59"
 
 } | ConvertTo-DDBItem
 Remove-DDBItem -TableName $TableName -Key $key -Confirm:$false
-
 
 # Remove-DDBTable -TableName $TableName -Force
