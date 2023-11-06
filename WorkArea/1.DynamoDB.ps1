@@ -1,13 +1,22 @@
 Import-Module AWS.Tools.DynamoDBv2
 Import-Module 'AWS.Tools.SimpleSystemsManagement'
 Import-Module AWS.Tools.EC2
+Import-Module 'AWS.Tools.SecretsManager'
 
-Get-Command -Module AWS.Tools.DynamoDBv2
+
+Get-Command -Module AWS.Tools.SecretsManager
+
+Get-SECSecretList
+Get-SECSecret -SecretId 'Conrad-AWS'
+
+$Key = (Get-SECSecretValue -SecretId 'DBAKeys-Common').SecretString | ConvertFrom-Json
+$Key.AccessKey 
 
 Get-DDBTables 
 
-Get-Help Get-DDBTable -Full
+Get-Help Get-SECSecretValue -Examples
 (Get-Module -ListAvailable).Name | Sort-Object   | Select-Object -First 40
+
 $TableName = 'DBA-EC2StateMonitor'
 
 # Create KeySchema
