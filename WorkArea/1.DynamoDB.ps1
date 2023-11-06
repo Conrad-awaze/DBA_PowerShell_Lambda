@@ -4,10 +4,10 @@ Import-Module AWS.Tools.EC2
 
 Get-Command -Module AWS.Tools.DynamoDBv2
 
-Get-DDBTables
+Get-DDBTables 
 
-Get-Help Invoke-DDBQuery  -Examples
-
+Get-Help Get-DDBTable -Full
+(Get-Module -ListAvailable).Name | Sort-Object   | Select-Object -First 40
 $TableName = 'DBA-EC2StateMonitor'
 
 # Create KeySchema
@@ -18,7 +18,7 @@ $Schema |   Add-DDBKeySchema -KeyName "PK" -KeyDataType "S" -KeyType HASH |
 # Create New Table
 New-DDBTable -TableName $TableName -Schema $Schema -ReadCapacity 10 -WriteCapacity 5
 
-Get-DDBTable -TableName $TableName
+Get-DDBTable -TableName 'DBA-EC2StateMonitor'
 
 $dynamoDBEvent = @{
                 
@@ -47,9 +47,21 @@ $Results[0].PK
 $key = @{
 
     PK = "$(Get-Date -format yyyy-MM-dd)"
-    SK = "11:59"
+    SK = "12:36"
 
 } | ConvertTo-DDBItem
 Remove-DDBItem -TableName $TableName -Key $key -Confirm:$false
 
 # Remove-DDBTable -TableName $TableName -Force
+
+
+# $AWSToolsSource = 'https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip'
+
+# $zipFile = Join-Path -Path 'C:\WorkArea' -ChildPath 'AWS.Tools.zip'
+
+# Invoke-WebRequest -Uri $AWSToolsSource -OutFile $zipFile
+
+# Expand-Archive -Path $zipFile -DestinationPath $ModuleStagingPath -ErrorAction SilentlyContinue
+
+# Import-Module 'C:\WorkArea\AWS.Tools\AWS.Tools.SecretsManager'
+
