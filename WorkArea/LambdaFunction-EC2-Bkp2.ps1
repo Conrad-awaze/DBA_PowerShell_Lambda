@@ -172,30 +172,76 @@ function handler
     
     #-----------------------------------------------------------------------------------------------------------------------------------------------
     # Send Teams Notification
+    
+    function Set-DaDDBEvent {
+        param (
+
+            $dynamoDBTableName,
+            $State, 
+            $EC2Instance,
+            $StartupType,
+            $LogGroup,
+            $LogStream,
+            $LambdaFunction,
+            $InstanceId,
+            $EventType,
+            $Parameter,
+            $AccessKey,
+            $SecretKey,
+            $Region
+
+        )
+
+        $dynamoDBEvent = @{
+
+            PK              = "$(Get-Date -format yyyy-MM-dd)"
+            SK              = "$State#$(get-date -format "HH:mm:ss:ms")#$EC2Instance"
+            EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
+            State           = $State
+            EC2Instance     = $EC2Instance
+            StartupType     = $StartupType
+            LogGroup        = $LogGroup
+            LogStream       = $LogStream
+            LambdaFunction  = $LambdaFunction
+            InstanceId      = $InstanceId
+            EventType       = $EventType
+            Parameter       = $Parameter
+            
+            
+        } | ConvertTo-DDBItem
+
+        Set-DDBItem -TableName $dynamoDBTableName -Item $dynamoDBEvent -AccessKey $AccessKey -SecretKey $SecretKey -Region $Region
+
+        Write-Host "DynamoDB - [$State] Event written to table $dynamoDBTableName"
+        
+    }
+    
+    #-----------------------------------------------------------------------------------------------------------------------------------------------
 
     switch ($($EC2Instance.State)) {
         
         PENDING { 
             
-            $dynamoDBEvent = @{
-                
-                PK              = "$(Get-Date -format yyyy-MM-dd)"
-                SK              = "$($EC2Instance.State)#$(get-date -format "HH:mm:ss:ms")#$($EC2Instance.Name)"
-                EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
-                EC2Instance     = $($EC2Instance.Name)
-                State           = $($EC2Instance.State)
-                StartupType     = $StartupType
-                LogGroup        = $($LambdaCon.LogGroup)
-                LogStream       = $($LambdaCon.LogStream)
-                LambdaFunction  = $LambdaCon.Function
-                InstanceId      = $($EC2Instance.InstanceId)
-                EventType       = $EventType
-                Parameter       = $Parameter
-                
-                
-            } | ConvertTo-DDBItem
-      
-            Set-DDBItem -TableName $dynamoDBTableName -Item $dynamoDBEvent -AccessKey $KeysCommon.AccessKey -SecretKey $KeysCommon.SecretKey -Region $Region
+            $ddbEventParameters = @{
+
+                dynamoDBTableName   = $dynamoDBTableName
+                State               = $($EC2Instance.State)
+                EC2Instance         = $($EC2Instance.Name)
+                StartupType         = $StartupType
+                LogGroup            = $($LambdaCon.LogGroup)
+                LogStream           = $($LambdaCon.LogStream)
+                LambdaFunction      = $LambdaCon.Function
+                InstanceId          = $($EC2Instance.InstanceId)
+                EventType           = $EventType
+                Parameter           = $Parameter
+                AccessKey           = $KeysCommon.AccessKey
+                SecretKey           = $KeysCommon.SecretKey
+                Region              = $Region
+            }
+
+            Set-DaDDBEvent @ddbEventParameters
+            
+            #-----------------------------------------------------------------------------------------------------------------------------------------------
             
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
@@ -228,24 +274,26 @@ function handler
 
         RUNNING {
             
-            $dynamoDBEvent = @{
-                
-                PK              = "$(Get-Date -format yyyy-MM-dd)"
-                SK              = "$($EC2Instance.State)#$(get-date -format "HH:mm:ss:ms")#$($EC2Instance.Name)"
-                EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
-                EC2Instance     = $($EC2Instance.Name)
-                State           = $($EC2Instance.State)
-                StartupType     = $StartupType
-                LogGroup        = $($LambdaCon.LogGroup)
-                LogStream       = $($LambdaCon.LogStream)
-                LambdaFunction  = $LambdaCon.Function
-                InstanceId      = $($EC2Instance.InstanceId)
-                EventType       = $EventType
-                Parameter       = $Parameter
-                
-            } | ConvertTo-DDBItem
-          
-            Set-DDBItem -TableName $dynamoDBTableName -Item $dynamoDBEvent -AccessKey $KeysCommon.AccessKey -SecretKey $KeysCommon.SecretKey -Region $Region
+            $ddbEventParameters = @{
+
+                dynamoDBTableName   = $dynamoDBTableName
+                State               = $($EC2Instance.State)
+                EC2Instance         = $($EC2Instance.Name)
+                StartupType         = $StartupType
+                LogGroup            = $($LambdaCon.LogGroup)
+                LogStream           = $($LambdaCon.LogStream)
+                LambdaFunction      = $LambdaCon.Function
+                InstanceId          = $($EC2Instance.InstanceId)
+                EventType           = $EventType
+                Parameter           = $Parameter
+                AccessKey           = $KeysCommon.AccessKey
+                SecretKey           = $KeysCommon.SecretKey
+                Region              = $Region
+            }
+
+            Set-DaDDBEvent @ddbEventParameters
+            
+            #-----------------------------------------------------------------------------------------------------------------------------------------------
 
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
@@ -295,25 +343,27 @@ function handler
 
         STOPPING {
             
-            $dynamoDBEvent = @{
-                
-                PK              = "$(Get-Date -format yyyy-MM-dd)"
-                SK              = "$($EC2Instance.State)#$(get-date -format "HH:mm:ss:ms")#$($EC2Instance.Name)"
-                EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
-                EC2Instance     = $($EC2Instance.Name)
-                State           = $($EC2Instance.State)
-                StartupType     = $StartupType
-                LogGroup        = $($LambdaCon.LogGroup)
-                LogStream       = $($LambdaCon.LogStream)
-                LambdaFunction  = $LambdaCon.Function
-                InstanceId      = $($EC2Instance.InstanceId)
-                EventType       = $EventType
-                Parameter       = $Parameter
-                
-            } | ConvertTo-DDBItem
-          
-            Set-DDBItem -TableName $dynamoDBTableName -Item $dynamoDBEvent -AccessKey $KeysCommon.AccessKey -SecretKey $KeysCommon.SecretKey -Region $Region
+            $ddbEventParameters = @{
 
+                dynamoDBTableName   = $dynamoDBTableName
+                State               = $($EC2Instance.State)
+                EC2Instance         = $($EC2Instance.Name)
+                StartupType         = $StartupType
+                LogGroup            = $($LambdaCon.LogGroup)
+                LogStream           = $($LambdaCon.LogStream)
+                LambdaFunction      = $LambdaCon.Function
+                InstanceId          = $($EC2Instance.InstanceId)
+                EventType           = $EventType
+                Parameter           = $Parameter
+                AccessKey           = $KeysCommon.AccessKey
+                SecretKey           = $KeysCommon.SecretKey
+                Region              = $Region
+            }
+
+            Set-DaDDBEvent @ddbEventParameters
+            
+            #-----------------------------------------------------------------------------------------------------------------------------------------------
+            
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
@@ -332,25 +382,27 @@ function handler
 
         STOPPED {
             
-            $dynamoDBEvent = @{
-                
-                PK              = "$(Get-Date -format yyyy-MM-dd)"
-                SK              = "$($EC2Instance.State)#$(get-date -format "HH:mm:ss:ms")#$($EC2Instance.Name)"
-                EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
-                EC2Instance     = $($EC2Instance.Name)
-                State           = $($EC2Instance.State)
-                StartupType     = $StartupType
-                LogGroup        = $($LambdaCon.LogGroup)
-                LogStream       = $($LambdaCon.LogStream)
-                LambdaFunction  = $LambdaCon.Function
-                InstanceId      = $($EC2Instance.InstanceId)
-                EventType       = $EventType
-                Parameter       = $Parameter
-                
-            } | ConvertTo-DDBItem
-          
-            Set-DDBItem -TableName $dynamoDBTableName -Item $dynamoDBEvent -AccessKey $KeysCommon.AccessKey -SecretKey $KeysCommon.SecretKey -Region $Region
+            $ddbEventParameters = @{
 
+                dynamoDBTableName   = $dynamoDBTableName
+                State               = $($EC2Instance.State)
+                EC2Instance         = $($EC2Instance.Name)
+                StartupType         = $StartupType
+                LogGroup            = $($LambdaCon.LogGroup)
+                LogStream           = $($LambdaCon.LogStream)
+                LambdaFunction      = $LambdaCon.Function
+                InstanceId          = $($EC2Instance.InstanceId)
+                EventType           = $EventType
+                Parameter           = $Parameter
+                AccessKey           = $KeysCommon.AccessKey
+                SecretKey           = $KeysCommon.SecretKey
+                Region              = $Region
+            }
+
+            Set-DaDDBEvent @ddbEventParameters
+            
+            #-----------------------------------------------------------------------------------------------------------------------------------------------
+            
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
