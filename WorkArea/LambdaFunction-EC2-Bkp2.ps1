@@ -17,19 +17,19 @@ function handler
         
     )
     
-    $Region     = 'eu-west-2'
-    $KeysCommon  = (Get-SECSecretValue -SecretId 'DBAKeys-Common').SecretString | ConvertFrom-Json
-    # $KeySandpit = (Get-SECSecretValue -SecretId 'DBAKeys-Sandpit').SecretString | ConvertFrom-Json
-    # Set-AWSCredential -AccessKey $Key.AccessKey -SecretKey $Key.SecretKey -Scope Global
+    $Region             = 'eu-west-2'
+    $KeysCommonAccount  = 'DBAKeys-Common'
+    $KeysSandpitAccount = 'DBAKeys-Sandpit'
+    $KeysCommon         = (Get-SECSecretValue -SecretId $KeysCommonAccount).SecretString | ConvertFrom-Json
     
     $GUID1              = '10ed1b71-1a9f-4427-a5cb-8ffc041487cd@bd846b68-132a-4a46-b1e7-d090e168c0a2'
     $GUID2              = '6eda4df9f3a246c582a0362c83e0ec58/34d83ea3-495b-45f0-9efa-2a30f32d086e'
     $URI                = "https://awazecom.webhook.office.com/webhookb2/$GUID1/IncomingWebhook/$GUID2"
     $EventType          = "AWS"
-    $dynamoDBTableName  = 'DBA-EC2StateMonitor' #'DBA_EC2StateMonitor'
+    $dynamoDBTableName  = 'DBA-EC2StateMonitor'
     
     $InstanceID         = $(([regex]::Matches("$($LambdaInput.resources)", '\w+\W+\w+$')).Value)
-    $EC2                =  (Get-EC2Instance -InstanceId $InstanceID).Instances
+    $EC2                = (Get-EC2Instance -InstanceId $InstanceID).Instances
     
     $EC2Instance    = [PSCustomObject]@{
 
@@ -54,7 +54,6 @@ function handler
     
     $AWS = @{
 
-        # InstanceID          = get-ec2instancemetadata -Category instanceid
         Hostname            = ($EC2Instance.Name).ToLower()
         # source              = "ec2.events"
         # NameDetails         = "/prod/ILT-Elasticity/Replicated/$($EC2Instance.Name)"
@@ -62,13 +61,15 @@ function handler
         OfflineParam        = "/prod/ILT-Elasticity/offline-ilts/$(($EC2Instance.Name).ToLower())"
         StartedforReplParam = "/prod/ILT-Elasticity/StartedforReplicationCatchup/" + ($EC2Instance.Name).ToLower()
         PatchingParam       = "/prod/ILT-Elasticity/Patching/$(($EC2Instance.Name).ToLower())"
-        DescriptionDetails  = "Replication is now completed on $($EC2Instance.Name). This Parameter will be deleted by ILT-Elasticity once the server has been added to the ILT Target Group"
-        OfflineDescr        = "Replication is now completed on $($EC2Instance.Name) and the server has been shutdown. This Parameter will be deleted by ILT-Elasticity once the server has been brought up once again"
+        
     }
+    
+    #---------------------------------------------------------------------------------------------------------------------
     
     #region DynamoDB Table Check and Setup
 
     # Get current list of tables
+    
     $TableList  = Get-DDBTables -AccessKey $KeysCommon.AccessKey -SecretKey $KeysCommon.SecretKey -Region $Region
 
     if ($TableList -contains $dynamoDBTableName) {
@@ -85,7 +86,6 @@ function handler
                     Add-DDBKeySchema -KeyName "SK" -KeyType RANGE -KeyDataType "S" 
 
         # Create New Table
-        # $TableDetails = New-DDBTable -TableName $dynamoDBTableName -Schema $Schema -ReadCapacity 5 -WriteCapacity 5
         
         $TableParameters = @{
             TableName       = $dynamoDBTableName
