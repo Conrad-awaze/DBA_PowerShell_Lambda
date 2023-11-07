@@ -9,10 +9,17 @@ Get-Command -Module AWS.Tools.SecretsManager
 Get-SECSecretList
 Get-SECSecret -SecretId 'Conrad-AWS'
 
-$Key = (Get-SECSecretValue -SecretId 'DBAKeys-Common').SecretString | ConvertFrom-Json
-$Key.AccessKey 
+$KeyCommon = (Get-SECSecretValue -SecretId 'DBAKeys-Common').SecretString | ConvertFrom-Json
+$KeySandpit = (Get-SECSecretValue -SecretId 'DBAKeys-Sandpit').SecretString | ConvertFrom-Json
 
-Get-DDBTables 
+(Get-EC2Instance -AccessKey $KeyCommon.AccessKey -SecretKey $KeyCommon.SecretKey -Region eu-west-2).Instances 
+(Get-EC2Instance -AccessKey $KeySandpit.AccessKey -SecretKey $KeySandpit.SecretKey -Region eu-west-2).Instances
+
+(Get-EC2Instance -InstanceId $InstanceID).Instances
+# Set-AWSCredential -AccessKey $Key.AccessKey -SecretKey $Key.SecretKey -Scope Global
+
+Get-DDBTables -AccessKey $KeyCommon.AccessKey -SecretKey $KeyCommon.SecretKey -Region eu-west-2
+Get-DDBTables -AccessKey $KeySandpit.AccessKey -SecretKey $KeySandpit.SecretKey -Region eu-west-2
 
 Get-Help Get-SECSecretValue -Examples
 (Get-Module -ListAvailable).Name | Sort-Object   | Select-Object -First 40
@@ -56,13 +63,12 @@ $Results[0].PK
 $key = @{
 
     PK = "$(Get-Date -format yyyy-MM-dd)"
-    SK = "12:36"
+    SK = "09:45"
 
 } | ConvertTo-DDBItem
 Remove-DDBItem -TableName $TableName -Key $key -Confirm:$false
 
 # Remove-DDBTable -TableName $TableName -Force
-
 
 # $AWSToolsSource = 'https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip'
 
@@ -74,3 +80,22 @@ Remove-DDBItem -TableName $TableName -Key $key -Confirm:$false
 
 # Import-Module 'C:\WorkArea\AWS.Tools\AWS.Tools.SecretsManager'
 
+
+$GUID1              = '10ed1b71-1a9f-4427-a5cb-8ffc041487cd@bd846b68-132a-4a46-b1e7-d090e168c0a2'
+$GUID2              = '6eda4df9f3a246c582a0362c83e0ec58/34d83ea3-495b-45f0-9efa-2a30f32d086e'
+$URI                = "https://awazecom.webhook.office.com/webhookb2/$GUID1/IncomingWebhook/$GUID2"
+
+New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
+    New-AdaptiveContainer {
+
+        New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "Server - No parameters found. Manual Start Up" -Color Accent -HorizontalAlignment Center
+
+        New-AdaptiveTextBlock -Text "$(get-date -format "dddd, dd MMMM yyyy HH:mm:ss")" -Subtle -HorizontalAlignment Center -Spacing None -Color Good
+        New-AdaptiveFactSet {
+    
+            New-AdaptiveFact -Title 'Server State' -Value 'RUNNING'
+            
+        } -Separator Medium
+        
+    }
+}
