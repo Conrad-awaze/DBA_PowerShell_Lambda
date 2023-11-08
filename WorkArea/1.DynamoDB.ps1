@@ -1,9 +1,9 @@
 Import-Module AWS.Tools.DynamoDBv2
-Import-Module 'AWS.Tools.SimpleSystemsManagement'
+Import-Module AWS.Tools.SimpleSystemsManagement
 Import-Module AWS.Tools.EC2
-Import-Module 'AWS.Tools.SecretsManager'
+Import-Module AWS.Tools.SecretsManager
 
-
+Find-Module -Name Webserver
 Get-Command -Module AWS.Tools.SecretsManager
 
 Get-SECSecretList

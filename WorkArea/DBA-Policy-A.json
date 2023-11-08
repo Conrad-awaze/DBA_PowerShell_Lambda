@@ -1,0 +1,46 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "ec2:DescribeInstances",
+                "dynamodb:ListTables",
+                "ssm:GetParameterHistory",
+                "ssm:GetParameters",
+                "logs:CreateLogGroup",
+                "logs:PutLogEvents",
+                "ssm:GetParameter",
+                "logs:CreateLogStream",
+                "dynamodb:DescribeTable",
+                "ssm:DescribeParameters",
+                "ec2:DescribeInstanceTypes",
+                "ssm:GetParametersByPath",
+                "ec2:DescribeInstanceStatus"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:CreateTable",
+                "secretsmanager:GetSecretValue",
+                "dynamodb:PutItem",
+                "secretsmanager:RestoreSecret",
+                "secretsmanager:PutSecretValue",
+                "dynamodb:DeleteItem",
+                "secretsmanager:CreateSecret",
+                "secretsmanager:DeleteSecret",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteTable",
+                "secretsmanager:UpdateSecret"
+            ],
+            "Resource": [
+                "arn:aws:secretsmanager:*:587525780573:secret:DBA*",
+                "arn:aws:dynamodb:*:587525780573:table/DBA*"
+            ]
+        }
+    ]
+}
