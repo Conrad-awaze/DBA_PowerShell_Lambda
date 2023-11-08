@@ -68,7 +68,7 @@ $key = @{
 } | ConvertTo-DDBItem
 Remove-DDBItem -TableName $TableName -Key $key -Confirm:$false
 
-# Remove-DDBTable -TableName $TableName -Force
+Remove-DDBTable -TableName $TableName -Force -AccessKey $KeyCommon.AccessKey -SecretKey $KeyCommon.SecretKey -Region eu-west-2
 
 # $AWSToolsSource = 'https://sdk-for-net.amazonwebservices.com/ps/v4/latest/AWS.Tools.zip'
 
