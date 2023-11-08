@@ -87,7 +87,7 @@ function handler
 
         # Create New Table
         
-        $TableParameters = @{
+        $NewTableParameters = @{
             TableName       = $dynamoDBTableName
             Schema          = $Schema
             ReadCapacity    = 10
@@ -96,15 +96,24 @@ function handler
             SecretKey       = $KeysCommon.SecretKey
             Region          = $Region
         }
-        New-DDBTable @TableParameters
+        New-DDBTable @NewTableParameters
+        
+        $GetTableParameters = @{
+                
+            TableName       = $dynamoDBTableName
+            AccessKey       = $KeysCommon.AccessKey
+            SecretKey       = $KeysCommon.SecretKey
+            Region          = $Region
+            
+        }
 
         # Confirm Table is active
-        while ((Get-DDBTable -TableName $dynamoDBTableName -AccessKey $KeysCommon.AccessKey -SecretKey $KeysCommon.SecretKey -Region $Region).TableStatus.Value -ne 'Active') {
+        while ((Get-DDBTable @GetTableParameters).TableStatus.Value -ne 'Active') {
 
             Start-Sleep 5
             
-            $TableStatus = (Get-DDBTable -TableName $dynamoDBTableName -AccessKey $KeysCommon.AccessKey -SecretKey $KeysCommon.SecretKey -Region $Region).TableStatus.Value
-        
+            $TableStatus = (Get-DDBTable @GetTableParameters).TableStatus.Value
+            
             switch ($TableStatus) {
                 
                 Active { Write-Host "DynamoDB - Table Status - $TableStatus" }
@@ -225,13 +234,13 @@ function handler
             $ddbEventParameters = @{
 
                 dynamoDBTableName   = $dynamoDBTableName
-                State               = $($EC2Instance.State)
-                EC2Instance         = $($EC2Instance.Name)
+                State               = $EC2Instance.State
+                EC2Instance         = $EC2Instance.Name
                 StartupType         = $StartupType
-                LogGroup            = $($LambdaCon.LogGroup)
-                LogStream           = $($LambdaCon.LogStream)
+                LogGroup            = $LambdaCon.LogGroup
+                LogStream           = $LambdaCon.LogStream
                 LambdaFunction      = $LambdaCon.Function
-                InstanceId          = $($EC2Instance.InstanceId)
+                InstanceId          = $EC2Instance.InstanceId
                 EventType           = $EventType
                 Parameter           = $Parameter
                 AccessKey           = $KeysCommon.AccessKey
@@ -277,13 +286,13 @@ function handler
             $ddbEventParameters = @{
 
                 dynamoDBTableName   = $dynamoDBTableName
-                State               = $($EC2Instance.State)
-                EC2Instance         = $($EC2Instance.Name)
+                State               = $EC2Instance.State
+                EC2Instance         = $EC2Instance.Name
                 StartupType         = $StartupType
-                LogGroup            = $($LambdaCon.LogGroup)
-                LogStream           = $($LambdaCon.LogStream)
+                LogGroup            = $LambdaCon.LogGroup
+                LogStream           = $LambdaCon.LogStream
                 LambdaFunction      = $LambdaCon.Function
-                InstanceId          = $($EC2Instance.InstanceId)
+                InstanceId          = $EC2Instance.InstanceId
                 EventType           = $EventType
                 Parameter           = $Parameter
                 AccessKey           = $KeysCommon.AccessKey
@@ -346,13 +355,13 @@ function handler
             $ddbEventParameters = @{
 
                 dynamoDBTableName   = $dynamoDBTableName
-                State               = $($EC2Instance.State)
-                EC2Instance         = $($EC2Instance.Name)
+                State               = $EC2Instance.State
+                EC2Instance         = $EC2Instance.Name
                 StartupType         = $StartupType
-                LogGroup            = $($LambdaCon.LogGroup)
-                LogStream           = $($LambdaCon.LogStream)
+                LogGroup            = $LambdaCon.LogGroup
+                LogStream           = $LambdaCon.LogStream
                 LambdaFunction      = $LambdaCon.Function
-                InstanceId          = $($EC2Instance.InstanceId)
+                InstanceId          = $EC2Instance.InstanceId
                 EventType           = $EventType
                 Parameter           = $Parameter
                 AccessKey           = $KeysCommon.AccessKey
@@ -385,13 +394,13 @@ function handler
             $ddbEventParameters = @{
 
                 dynamoDBTableName   = $dynamoDBTableName
-                State               = $($EC2Instance.State)
-                EC2Instance         = $($EC2Instance.Name)
+                State               = $EC2Instance.State
+                EC2Instance         = $EC2Instance.Name
                 StartupType         = $StartupType
-                LogGroup            = $($LambdaCon.LogGroup)
-                LogStream           = $($LambdaCon.LogStream)
+                LogGroup            = $LambdaCon.LogGroup
+                LogStream           = $LambdaCon.LogStream
                 LambdaFunction      = $LambdaCon.Function
-                InstanceId          = $($EC2Instance.InstanceId)
+                InstanceId          = $EC2Instance.InstanceId
                 EventType           = $EventType
                 Parameter           = $Parameter
                 AccessKey           = $KeysCommon.AccessKey
