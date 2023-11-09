@@ -1,0 +1,68 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:UpdateGlobalTableSettings",
+                "dynamodb:CreateGlobalTable",
+                "dynamodb:UpdateGlobalTable",
+                "dynamodb:DeleteBackup"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:*:498137832111:table/DBA*/backup/DBA*",
+                "arn:aws:dynamodb::498137832111:global-table/DBA*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor1",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:UpdateGlobalTable",
+                "dynamodb:StartAwsBackupJob",
+                "dynamodb:UpdateItem",
+                "dynamodb:CreateBackup",
+                "dynamodb:DeleteTable",
+                "dynamodb:CreateTable",
+                "dynamodb:UpdateGlobalTableSettings",
+                "dynamodb:RestoreTableFromAwsBackup",
+                "dynamodb:DescribeTable",
+                "dynamodb:RestoreTableFromBackup",
+                "dynamodb:GetItem",
+                "dynamodb:CreateGlobalTable",
+                "dynamodb:UpdateTable"
+            ],
+            "Resource": "arn:aws:dynamodb:*:498137832111:table/DBA*"
+        },
+        {
+            "Sid": "VisualEditor2",
+            "Effect": "Allow",
+            "Action": [
+                "dynamodb:UpdateGlobalTableSettings",
+                "dynamodb:DescribeGlobalTableSettings",
+                "dynamodb:DescribeGlobalTable",
+                "dynamodb:RestoreTableFromBackup",
+                "dynamodb:CreateGlobalTable",
+                "dynamodb:UpdateGlobalTable",
+                "dynamodb:DescribeBackup",
+                "dynamodb:DeleteBackup"
+            ],
+            "Resource": [
+                "arn:aws:dynamodb:*:498137832111:table/DBA*/backup/DBA*",
+                "arn:aws:dynamodb::498137832111:global-table/DBA*"
+            ]
+        },
+        {
+            "Sid": "VisualEditor3",
+            "Effect": "Allow",
+            "Action": "dynamodb:ListTables",
+            "Resource": "*"
+        }
+    ]
+}
