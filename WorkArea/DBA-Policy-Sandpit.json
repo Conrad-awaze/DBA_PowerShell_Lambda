@@ -25,16 +25,24 @@
 				"s3:DeleteBucket",
 				"dynamodb:DescribeBackup",
 				"dynamodb:DeleteBackup",
-				"cloudformation:ListChangeSets"
+				"cloudformation:ListChangeSets",
+				"s3:PutBucketVersioning",
+				"s3:PutBucketPublicAccessBlock",
+				"cloudformation:ListStacks",
+				"cloudformation:ListStackInstances",
+				"cloudformation:ListStackResources",
+				"cloudformation:ListStackSetOperationResults",
+				"cloudformation:ListStackSetOperations",
+				"cloudformation:ListStackSets"
 			],
 			"Resource": [
-				"arn:aws:dynamodb:*:586192859768:table/DBA*",
-				"arn:aws:secretsmanager:*:586192859768:secret:DBA*",
-				"arn:aws:lambda:*:586192859768:function:DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*",
+				"arn:aws:secretsmanager:*:587525780573:secret:DBA*",
+				"arn:aws:lambda:*:587525780573:function:DBA*",
 				"arn:aws:s3:::*/*",
-				"arn:aws:dynamodb::586192859768:global-table/DBA*",
-				"arn:aws:dynamodb:*:586192859768:table/DBA*/backup/DBA*",
-				"arn:aws:cloudformation:*:586192859768:stack/aws-sam-cli*/*",
+				"arn:aws:dynamodb::587525780573:global-table/DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*/backup/DBA*",
+				"arn:aws:cloudformation:*:587525780573:stack/aws-sam-cli*/*",
 				"arn:aws:s3:::*"
 			]
 		},
@@ -52,11 +60,11 @@
 				"cloudformation:ListChangeSets"
 			],
 			"Resource": [
-				"arn:aws:dynamodb::586192859768:global-table/DBA*",
-				"arn:aws:dynamodb:*:586192859768:table/DBA*/backup/DBA*",
-				"arn:aws:lambda:*:586192859768:function:DBA*",
-				"arn:aws:secretsmanager:*:586192859768:secret:DBA*",
-				"arn:aws:cloudformation:*:586192859768:stack/aws-sam-cli*/*"
+				"arn:aws:dynamodb::587525780573:global-table/DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*/backup/DBA*",
+				"arn:aws:lambda:*:587525780573:function:DBA*",
+				"arn:aws:secretsmanager:*:587525780573:secret:DBA*",
+				"arn:aws:cloudformation:*:587525780573:stack/aws-sam-cli*/*"
 			]
 		},
 		{
@@ -70,11 +78,11 @@
 				"cloudformation:DescribeStacks"
 			],
 			"Resource": [
-				"arn:aws:dynamodb::586192859768:global-table/DBA*",
-				"arn:aws:dynamodb:*:586192859768:table/DBA*/backup/DBA*",
-				"arn:aws:lambda:*:586192859768:function:DBA*",
-				"arn:aws:secretsmanager:*:586192859768:secret:DBA*",
-				"arn:aws:cloudformation:*:586192859768:stack/aws-sam-cli*/*"
+				"arn:aws:dynamodb::587525780573:global-table/DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*/backup/DBA*",
+				"arn:aws:lambda:*:587525780573:function:DBA*",
+				"arn:aws:secretsmanager:*:587525780573:secret:DBA*",
+				"arn:aws:cloudformation:*:587525780573:stack/aws-sam-cli*/*"
 			]
 		},
 		{
@@ -126,9 +134,9 @@
 				"dynamodb:UpdateTable"
 			],
 			"Resource": [
-				"arn:aws:lambda:*:586192859768:function:DBA*",
-				"arn:aws:secretsmanager:*:586192859768:secret:DBA*",
-				"arn:aws:dynamodb:*:586192859768:table/DBA*",
+				"arn:aws:lambda:*:587525780573:function:DBA*",
+				"arn:aws:secretsmanager:*:587525780573:secret:DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*",
 				"arn:aws:s3:::*/*"
 			]
 		},
@@ -145,8 +153,8 @@
 			],
 			"Resource": [
 				"arn:aws:s3:::*",
-				"arn:aws:dynamodb::586192859768:global-table/DBA*",
-				"arn:aws:dynamodb:*:586192859768:table/DBA*/backup/DBA*"
+				"arn:aws:dynamodb::587525780573:global-table/DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*/backup/DBA*"
 			]
 		},
 		{
@@ -160,13 +168,13 @@
 				"cloudformation:DescribeStacks"
 			],
 			"Resource": [
-				"arn:aws:dynamodb:*:586192859768:table/DBA*",
-				"arn:aws:secretsmanager:*:586192859768:secret:DBA*",
-				"arn:aws:lambda:*:586192859768:function:DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*",
+				"arn:aws:secretsmanager:*:587525780573:secret:DBA*",
+				"arn:aws:lambda:*:587525780573:function:DBA*",
 				"arn:aws:s3:::*/*",
-				"arn:aws:dynamodb::586192859768:global-table/DBA*",
-				"arn:aws:dynamodb:*:586192859768:table/DBA*/backup/DBA*",
-				"arn:aws:cloudformation:*:586192859768:stack/aws-sam-cli*/*"
+				"arn:aws:dynamodb::587525780573:global-table/DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*/backup/DBA*",
+				"arn:aws:cloudformation:*:587525780573:stack/aws-sam-cli*/*"
 			]
 		},
 		{
@@ -179,11 +187,11 @@
 				"cloudformation:ListChangeSets"
 			],
 			"Resource": [
-				"arn:aws:dynamodb::586192859768:global-table/DBA*",
-				"arn:aws:dynamodb:*:586192859768:table/DBA*/backup/DBA*",
-				"arn:aws:lambda:*:586192859768:function:DBA*",
-				"arn:aws:secretsmanager:*:586192859768:secret:DBA*",
-				"arn:aws:cloudformation:*:586192859768:stack/aws-sam-cli*/*"
+				"arn:aws:dynamodb::587525780573:global-table/DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*/backup/DBA*",
+				"arn:aws:lambda:*:587525780573:function:DBA*",
+				"arn:aws:secretsmanager:*:587525780573:secret:DBA*",
+				"arn:aws:cloudformation:*:587525780573:stack/aws-sam-cli*/*"
 			]
 		},
 		{
@@ -197,11 +205,11 @@
 				"cloudformation:DescribeStacks"
 			],
 			"Resource": [
-				"arn:aws:dynamodb::586192859768:global-table/DBA*",
-				"arn:aws:dynamodb:*:586192859768:table/DBA*/backup/DBA*",
-				"arn:aws:lambda:*:586192859768:function:DBA*",
-				"arn:aws:secretsmanager:*:586192859768:secret:DBA*",
-				"arn:aws:cloudformation:*:586192859768:stack/aws-sam-cli*/*"
+				"arn:aws:dynamodb::587525780573:global-table/DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*/backup/DBA*",
+				"arn:aws:lambda:*:587525780573:function:DBA*",
+				"arn:aws:secretsmanager:*:587525780573:secret:DBA*",
+				"arn:aws:cloudformation:*:587525780573:stack/aws-sam-cli*/*"
 			]
 		},
 		{
@@ -214,11 +222,11 @@
 				"cloudformation:ListChangeSets"
 			],
 			"Resource": [
-				"arn:aws:dynamodb::586192859768:global-table/DBA*",
-				"arn:aws:dynamodb:*:586192859768:table/DBA*/backup/DBA*",
-				"arn:aws:cloudformation:*:586192859768:stack/aws-sam-cli*/*",
-				"arn:aws:lambda:*:586192859768:function:DBA*",
-				"arn:aws:secretsmanager:*:586192859768:secret:DBA*"
+				"arn:aws:dynamodb::587525780573:global-table/DBA*",
+				"arn:aws:dynamodb:*:587525780573:table/DBA*/backup/DBA*",
+				"arn:aws:cloudformation:*:587525780573:stack/aws-sam-cli*/*",
+				"arn:aws:lambda:*:587525780573:function:DBA*",
+				"arn:aws:secretsmanager:*:587525780573:secret:DBA*"
 			]
 		}
 	]

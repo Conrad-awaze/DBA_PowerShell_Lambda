@@ -1,68 +1,81 @@
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "VisualEditor0",
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:UpdateGlobalTableSettings",
-                "dynamodb:CreateGlobalTable",
-                "dynamodb:UpdateGlobalTable",
-                "dynamodb:DeleteBackup"
-            ],
-            "Resource": [
-                "arn:aws:dynamodb:*:498137832111:table/DBA*/backup/DBA*",
-                "arn:aws:dynamodb::498137832111:global-table/DBA*"
-            ]
-        },
-        {
-            "Sid": "VisualEditor1",
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:BatchWriteItem",
-                "dynamodb:PutItem",
-                "dynamodb:DeleteItem",
-                "dynamodb:Scan",
-                "dynamodb:Query",
-                "dynamodb:UpdateGlobalTable",
-                "dynamodb:StartAwsBackupJob",
-                "dynamodb:UpdateItem",
-                "dynamodb:CreateBackup",
-                "dynamodb:DeleteTable",
-                "dynamodb:CreateTable",
-                "dynamodb:UpdateGlobalTableSettings",
-                "dynamodb:RestoreTableFromAwsBackup",
-                "dynamodb:DescribeTable",
-                "dynamodb:RestoreTableFromBackup",
-                "dynamodb:GetItem",
-                "dynamodb:CreateGlobalTable",
-                "dynamodb:UpdateTable"
-            ],
-            "Resource": "arn:aws:dynamodb:*:498137832111:table/DBA*"
-        },
-        {
-            "Sid": "VisualEditor2",
-            "Effect": "Allow",
-            "Action": [
-                "dynamodb:UpdateGlobalTableSettings",
-                "dynamodb:DescribeGlobalTableSettings",
-                "dynamodb:DescribeGlobalTable",
-                "dynamodb:RestoreTableFromBackup",
-                "dynamodb:CreateGlobalTable",
-                "dynamodb:UpdateGlobalTable",
-                "dynamodb:DescribeBackup",
-                "dynamodb:DeleteBackup"
-            ],
-            "Resource": [
-                "arn:aws:dynamodb:*:498137832111:table/DBA*/backup/DBA*",
-                "arn:aws:dynamodb::498137832111:global-table/DBA*"
-            ]
-        },
-        {
-            "Sid": "VisualEditor3",
-            "Effect": "Allow",
-            "Action": "dynamodb:ListTables",
-            "Resource": "*"
-        }
-    ]
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "VisualEditor0",
+			"Effect": "Allow",
+			"Action": [
+				"dynamodb:UpdateGlobalTableSettings",
+				"lambda:InvokeFunction",
+				"lambda:GetFunction",
+				"secretsmanager:PutSecretValue",
+				"secretsmanager:CreateSecret",
+				"secretsmanager:DeleteSecret",
+				"dynamodb:CreateGlobalTable",
+				"dynamodb:UpdateGlobalTable",
+				"dynamodb:DeleteBackup"
+			],
+			"Resource": [
+				"arn:aws:dynamodb::498137832111:global-table/DBA*",
+				"arn:aws:dynamodb:*:498137832111:table/DBA*/backup/DBA*",
+				"arn:aws:lambda:*:498137832111:function:DBA*",
+				"arn:aws:secretsmanager:*:498137832111:secret:DBA*"
+			]
+		},
+		{
+			"Sid": "VisualEditor1",
+			"Effect": "Allow",
+			"Action": [
+				"dynamodb:BatchWriteItem",
+				"dynamodb:PutItem",
+				"dynamodb:DeleteItem",
+				"dynamodb:Scan",
+				"dynamodb:Query",
+				"dynamodb:UpdateGlobalTable",
+				"dynamodb:StartAwsBackupJob",
+				"dynamodb:UpdateItem",
+				"dynamodb:CreateBackup",
+				"dynamodb:DeleteTable",
+				"dynamodb:CreateTable",
+				"dynamodb:UpdateGlobalTableSettings",
+				"dynamodb:RestoreTableFromAwsBackup",
+				"dynamodb:DescribeTable",
+				"dynamodb:RestoreTableFromBackup",
+				"dynamodb:GetItem",
+				"dynamodb:CreateGlobalTable",
+				"dynamodb:UpdateTable"
+			],
+			"Resource": "arn:aws:dynamodb:*:498137832111:table/DBA*"
+		},
+		{
+			"Sid": "VisualEditor2",
+			"Effect": "Allow",
+			"Action": [
+				"dynamodb:UpdateGlobalTableSettings",
+				"dynamodb:DescribeGlobalTableSettings",
+				"dynamodb:DescribeGlobalTable",
+				"dynamodb:RestoreTableFromBackup",
+				"dynamodb:CreateGlobalTable",
+				"dynamodb:UpdateGlobalTable",
+				"dynamodb:DescribeBackup",
+				"dynamodb:DeleteBackup"
+			],
+			"Resource": [
+				"arn:aws:dynamodb::498137832111:global-table/DBA*",
+				"arn:aws:dynamodb:*:498137832111:table/DBA*/backup/DBA*"
+			]
+		},
+		{
+			"Sid": "VisualEditor3",
+			"Effect": "Allow",
+			"Action": [
+				"dynamodb:ListTables",
+				"lambda:ListLayers",
+				"cloudformation:CreateChangeSet",
+				"cloudformation:DescribeChangeSet",
+				"cloudformation:ListChangeSets"
+			],
+			"Resource": "*"
+		}
+	]
 }

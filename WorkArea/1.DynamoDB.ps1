@@ -2,15 +2,24 @@ Import-Module AWS.Tools.DynamoDBv2
 Import-Module AWS.Tools.SimpleSystemsManagement
 Import-Module AWS.Tools.EC2
 Import-Module AWS.Tools.SecretsManager
+Import-Module AWS.Tools.CloudFormation
 
+Update-AWSToolsModule
+
+Install-Module -Name 'AWS.Tools.CloudFormation' -Scope AllUsers
 Find-Module -Name Webserver
-Get-Command -Module AWS.Tools.SecretsManager
+Get-Command -Module AWS.Tools.CloudFormation
+
+Get-CFNStack -StackName 'aws-sam-cli-managed-default' -AccessKey $KeyA.AccessKey -SecretKey $KeyA.SecretKey -Region eu-west-2
 
 Get-SECSecretList
 Get-SECSecret -SecretId 'Conrad-AWS'
+Get-SSMParameterList 
+
 
 $KeyCommon = (Get-SECSecretValue -SecretId 'DBAKeys-Common').SecretString | ConvertFrom-Json
 $KeySandpit = (Get-SECSecretValue -SecretId 'DBAKeys-Sandpit').SecretString | ConvertFrom-Json
+$KeyA = (Get-SECSecretValue -SecretId 'DBAKeys-VRUK-A').SecretString | ConvertFrom-Json
 
 (Get-EC2Instance -AccessKey $KeyCommon.AccessKey -SecretKey $KeyCommon.SecretKey -Region eu-west-2).Instances 
 (Get-EC2Instance -AccessKey $KeySandpit.AccessKey -SecretKey $KeySandpit.SecretKey -Region eu-west-2).Instances

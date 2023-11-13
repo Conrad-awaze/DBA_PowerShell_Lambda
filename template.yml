@@ -13,22 +13,22 @@ Resources:
 ##########################################################################
 #  Lambda functions                                                      #
 ##########################################################################
-  PowerShellFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Architectures:
-        - x86_64
-      Description: PowerShell-Lambda-Runtime Function
-      CodeUri: function/
-      Runtime: provided.al2
-      Handler: handlerScript.ps1::handler
-      MemorySize: 512
-      Timeout: 100
-      Layers:
-        - !Ref PowerShellRuntime
-        - !Ref PowerShellModules
-    Metadata:
-      BuildMethod: makefile
+  # PowerShellFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     Architectures:
+  #       - x86_64
+  #     Description: PowerShell-Lambda-Runtime Function
+  #     CodeUri: function/
+  #     Runtime: provided.al2
+  #     Handler: handlerScript.ps1::handler
+  #     MemorySize: 512
+  #     Timeout: 100
+  #     Layers:
+  #       - !Ref PowerShellRuntime
+  #       - !Ref PowerShellModules
+  #   Metadata:
+  #     BuildMethod: makefile
 ##########################################################################
 #  Lambda layers                                                         #
 ##########################################################################
@@ -78,9 +78,13 @@ Outputs:
   PowerShellModules:
     Value: !Ref PowerShellModules
     Description: PowerShellModules Layer ARN
-  PowerShellFunction:
-    Value: !Ref PowerShellFunction
-    Description: PowerShell Lambda Function
+  # PowerShellFunction:
+  #   Value: !Ref PowerShellFunction
+  #   Description: PowerShell Lambda Function
+
+
+
+
 
 
 
