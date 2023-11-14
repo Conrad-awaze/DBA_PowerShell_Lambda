@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: PowerShell custom runtime and a Lambda function.
+Description: PowerShell Function, Modules and Custom Runtime.
 ##########################################################################
 #  Parameters & Globals                                                  #
 ##########################################################################
@@ -13,22 +13,23 @@ Resources:
 ##########################################################################
 #  Lambda functions                                                      #
 ##########################################################################
-  # PowerShellFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     Architectures:
-  #       - x86_64
-  #     Description: PowerShell-Lambda-Runtime Function
-  #     CodeUri: function/
-  #     Runtime: provided.al2
-  #     Handler: handlerScript.ps1::handler
-  #     MemorySize: 512
-  #     Timeout: 100
-  #     Layers:
-  #       - !Ref PowerShellRuntime
-  #       - !Ref PowerShellModules
-  #   Metadata:
-  #     BuildMethod: makefile
+  PowerShellFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Architectures:
+        - x86_64
+      FunctionName: DBA_EC2StateChangeMonitor
+      Description: PowerShell Lambda Function to monitor EC2 States
+      CodeUri: function/
+      Runtime: provided.al2
+      Handler: DBA_EC2StateChangeMonitor.ps1::handler
+      MemorySize: 1024
+      Timeout: 100
+      Layers:
+        - !Ref PowerShellRuntime
+        - !Ref PowerShellModules
+    Metadata:
+      BuildMethod: makefile
 ##########################################################################
 #  Lambda layers                                                         #
 ##########################################################################
@@ -53,7 +54,7 @@ Resources:
   PowerShellModules:
     Type: AWS::Serverless::LayerVersion
     Properties:
-      Description: Layer containing PowerShell Modules
+      Description: Lambda Layer containing PowerShell Modules
       ContentUri: ./layers/modulesLayer
       CompatibleRuntimes:
         - provided.al2
@@ -78,9 +79,10 @@ Outputs:
   PowerShellModules:
     Value: !Ref PowerShellModules
     Description: PowerShellModules Layer ARN
-  # PowerShellFunction:
-  #   Value: !Ref PowerShellFunction
-  #   Description: PowerShell Lambda Function
+  PowerShellFunction:
+    Value: !Ref PowerShellFunction
+    Description: PowerShell Lambda Function
+
 
 
 
