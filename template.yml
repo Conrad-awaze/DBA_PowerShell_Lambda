@@ -18,11 +18,11 @@ Resources:
     Properties:
       Architectures:
         - x86_64
-      FunctionName: DBA_EC2StateChangeMonitor
+      FunctionName: DBA-EC2-State-Change-Monitor
       Description: PowerShell Lambda Function to monitor EC2 States
       CodeUri: function/
       Runtime: provided.al2
-      Handler: DBA_EC2StateChangeMonitor.ps1::handler
+      Handler: DBA-EC2StateChangeMonitor.ps1::handler
       MemorySize: 1024
       Timeout: 100
       Layers:
@@ -82,6 +82,7 @@ Outputs:
   PowerShellFunction:
     Value: !Ref PowerShellFunction
     Description: PowerShell Lambda Function
+
 
 
 
