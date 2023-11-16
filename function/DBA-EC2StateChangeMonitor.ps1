@@ -17,7 +17,8 @@ function handler
         
     )
 
-    Write-Host "Command count - $((Get-Command -Module 'PSTeams').Count)"
+    Write-Host "Command count [$((Get-Command -Module 'PSTeams').Count)] - PSTeams"
+    Write-Host "Command count [$((Get-Command -Module 'AWS.Tools.Lambda').Count)] - AWS.Tools.Lambda"
     
     # $Region             = 'eu-west-2'
     # $KeysCommonAccount  = 'DBAKeys-Common'
