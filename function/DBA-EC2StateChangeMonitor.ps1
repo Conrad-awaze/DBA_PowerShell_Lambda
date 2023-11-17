@@ -57,14 +57,14 @@ function handler
         # NameDetails         = "/prod/ILT-Elasticity/Replicated/$($EC2Instance.Name)"
         StartedParam        = "/prod/ILT-Elasticity/Started/$(($EC2Instance.Name).ToLower())"
         OfflineParam        = "/prod/ILT-Elasticity/offline-ilts/$(($EC2Instance.Name).ToLower())"
-        StartedforReplParam = "/prod/ILT-Elasticity/StartedforReplicationCatchup/" + ($EC2Instance.Name).ToLower()
         PatchingParam       = "/prod/ILT-Elasticity/Patching/$(($EC2Instance.Name).ToLower())"
+        MaintModeParam      = "/prod/ILT-Elasticity/InMaintenanceMode/$(($EC2Instance.Name).ToLower())"
         
     }
     
     #---------------------------------------------------------------------------------------------------------------------
     
-    # region DynamoDB Table Check and Setup
+    #region DynamoDB Table Check and Setup
 
     # Get current list of tables
     
@@ -123,59 +123,112 @@ function handler
 
     #endregion
     
-    # region Parameter Check
-    $StartedParameter   = " "
-    $PatchingParameter  = " "
+    #region Parameter Check
+    $StartedParameter           = " "
+    $PatchingParameter          = " "
+    $MaintenanceModeParameter   = " "
     
     #---------------------------------------------------------------------------------------------------------------------
     # Check Parameters
-
-    try {
+    
+    $CurrentParameter = (Get-SSMParameterList).Name | Where-Object  {$_ -match $(($EC2Instance.Name).ToLower())}
+    
+    if ($CurrentParameter.Count -eq 1) {
+    
+        switch ($CurrentParameter) {
+            
+            {$_ -match 'InMaintenanceMode'} {
+                
+                $StartupType    = "Maintenance"
+                $Parameter      = $($AWS.MaintModeParam)
+                Write-Host "Setting Startup Type to 'Maintenance' due to presence of Parameter $($AWS.MaintModeParam)"
+                
+            }
+            {$_ -match 'Patching'} { 
+                
+                $StartupType    = "Patching"
+                $Parameter      = $($AWS.PatchingParam)
+                Write-Host "Setting Startup Type to 'Patching' due to presence of Parameter $($AWS.PatchingParam)"
+                
+            }
+            {$_ -match 'Started'} { 
+                
+                $StartupType    = "AutoScaling"
+                $Parameter      = $($AWS.StartedParam)
+                Write-Host "Setting Startup Type to 'Standard' due to presence of Parameter $($AWS.StartedParam)"
+            }
+            Default {
+                
+                $StartupType    = "Manual"
+                $Parameter      = "No Parameters Found"
+                Write-Host "No Parameters found"
+            }
+        }
+    }else {
         
-        $StartedParameter   =  Get-SSMParameter -Name $AWS.StartedParam
+        Write-Host "ERROR: More than one paramater found. Stopping the script...!!!"
+        Write-Host "$CurrentParameter"
+        exit
         
     }
-    catch {
 
-        Write-Host "No 'Started' Parameter Found"
-        Write-Host "Started Parameter error - $_"
-    }
+    # try {
+        
+    #     $StartedParameter   =  Get-SSMParameter -Name $AWS.StartedParam
+        
+    # }
+    # catch {
 
-    try {
-        
-        $PatchingParameter   =  Get-SSMParameter -Name $AWS.PatchingParam
-        
-    }
-    catch {
+    #     Write-Host "No 'Started' Parameter Found"
+    #     Write-Host "Started Parameter error - $_"
+    # }
 
-        Write-Host "No 'Patching' Parameter Found"
-        Write-Host "Patching Parameter error - $_"
+    # try {
         
-    }
+    #     $PatchingParameter   =  Get-SSMParameter -Name $AWS.PatchingParam
+        
+    # }
+    # catch {
+
+    #     Write-Host "No 'Patching' Parameter Found"
+    #     Write-Host "Patching Parameter error - $_"
+        
+    # }
+    # try {
+        
+    #     $MaintenanceModeParameter   =  Get-SSMParameter -Name $AWS.MaintModeParam
+        
+    # }
+    # catch {
+
+    #     Write-Host "No 'Maint' Parameter Found"
+    #     Write-Host "Patching Parameter error - $_"
+        
+    # }
     
     #endregion
     
-    $ParameterList = (Get-SSMParameterList).Name
+    # $ParameterList = (Get-SSMParameterList).Name
 
     
-    if ($ParameterList.Contains($StartedParameter.Name)) {
+    # if ($ParameterList.Contains($StartedParameter.Name)) {
         
-        $StartupType    = "AutoScaling"
-        $Parameter      = $($AWS.StartedParam)
-        Write-Host "Setting Startup Type to 'Standard' due to presence of Parameter $($AWS.StartedParam)"
+    #     $StartupType    = "AutoScaling"
+    #     $Parameter      = $($AWS.StartedParam)
+    #     Write-Host "Setting Startup Type to 'Standard' due to presence of Parameter $($AWS.StartedParam)"
 
-    }elseif ($ParameterList.Contains($PatchingParameter.Name)) {
+    # }elseif ($ParameterList.Contains($PatchingParameter.Name)) {
 
-        $StartupType    = "Patching"
-        $Parameter      = $($AWS.PatchingParam)
-        Write-Host "Setting Startup Type to 'Patching' due to presence of Parameter $($AWS.PatchingParam)"
+    #     $StartupType    = "Patching"
+    #     $Parameter      = $($AWS.PatchingParam)
+    #     Write-Host "Setting Startup Type to 'Patching' due to presence of Parameter $($AWS.PatchingParam)"
 
-    }else {
+    # }else {
     
-        $StartupType    = "Manual"
-        $Parameter      = "No Parameters Found"
-        Write-Host "No Parameters found"
-    }
+    #     $StartupType    = "Manual"
+    #     $Parameter      = "No Parameters Found"
+    #     Write-Host "No Parameters found"
+    # }
     
     #-----------------------------------------------------------------------------------------------------------------------------------------------
     # Send Teams Notification
@@ -425,7 +478,7 @@ function handler
             New-AdaptiveCard -Uri $URI -VerticalContentAlignment center -FullWidth  {
                 New-AdaptiveContainer {
             
-                    New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server Start Up Completed [$StartupType]" -Color Accent -HorizontalAlignment Center
+                    New-AdaptiveTextBlock -Size Large -Weight Bolder -Text "$($EC2Instance.Name) - Server Shut Down Completed [$StartupType]" -Color Accent -HorizontalAlignment Center
                     New-AdaptiveTextBlock -Text "$(get-date -format "dddd, dd MMMM yyyy HH:mm:ss")" -Subtle -HorizontalAlignment Center -Spacing None -Color Good
                     
                 }

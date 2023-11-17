@@ -6,6 +6,44 @@ Import-Module AWS.Tools.CloudFormation
 
 Update-AWSToolsModule
 
+$AWS = @{
+
+    Hostname            = ($EC2Instance.Name).ToLower()
+    # source              = "ec2.events"
+    # NameDetails         = "/prod/ILT-Elasticity/Replicated/$($EC2Instance.Name)"
+    StartedParam        = "/prod/ILT-Elasticity/Started/$(($EC2Instance.Name).ToLower())"
+    OfflineParam        = "/prod/ILT-Elasticity/offline-ilts/$(($EC2Instance.Name).ToLower())"
+    StartedforReplParam = "/prod/ILT-Elasticity/StartedforReplicationCatchup/" + ($EC2Instance.Name).ToLower()
+    PatchingParam       = "/prod/ILT-Elasticity/Patching/$(($EC2Instance.Name).ToLower())"
+    MaintModeParam      = "/prod/ILT-Elasticity/InMaintenanceMode/$(($EC2Instance.Name).ToLower())"
+    
+}
+
+$Ec2Instance  = "vruka-iltsql08b"
+$CurrentParameter = (Get-SSMParameterList).Name | Where-Object  {$_ -match $(($EC2Instance.Name).ToLower())}
+
+if ($CurrentParameter.Count -eq 1) {
+    
+    switch ($Parameter) {
+        {$_ -match 'InMaintenanceMode'} { 
+            Write-Host "Maint Mode"
+        }
+        {$_ -match 'Patching'} { 
+            Write-Host "Patching"
+        }
+        {$_ -match 'Started'} { 
+            Write-Host "AutoScaling"
+        }
+        Default {
+            Write-Host "No parameters found"
+        }
+    }
+}else {
+    Write-Host "ERROR: More than one paramater found"
+    Write-Host "$CurrentParameter"
+    exit
+}
+
 Install-Module -Name 'AWS.Tools.CloudFormation' -Scope AllUsers
 Find-Module -Name Webserver
 Get-Command -Module AWS.Tools.CloudFormation
@@ -14,7 +52,6 @@ Get-CFNStack -StackName 'aws-sam-cli-managed-default' -AccessKey $KeyA.AccessKey
 
 Get-SECSecretList
 Get-SECSecret -SecretId 'Conrad-AWS'
-Get-SSMParameterList 
 
 
 $KeyCommon = (Get-SECSecretValue -SecretId 'DBAKeys-Common').SecretString | ConvertFrom-Json
