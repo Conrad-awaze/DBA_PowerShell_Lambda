@@ -18,6 +18,7 @@ function handler
     )
 
     $Region             = 'eu-west-2'
+    $AWSAccount         = 'AWS - VRUK-A'
     $KeysCommonAccount  = 'DBAKeys-Common'
     $KeysCommon         = (Get-SECSecretValue -SecretId $KeysCommonAccount).SecretString | ConvertFrom-Json
     $GUID1              = '10ed1b71-1a9f-4427-a5cb-8ffc041487cd@bd846b68-132a-4a46-b1e7-d090e168c0a2'
@@ -66,8 +67,6 @@ function handler
     
     #region DynamoDB Table Check and Setup
 
-    # Get current list of tables
-    
     $TableList  = Get-DDBTables -AccessKey $KeysCommon.AccessKey -SecretKey $KeysCommon.SecretKey -Region $Region
     
     if ($TableList -contains $dynamoDBTableName) {
@@ -124,9 +123,6 @@ function handler
     #endregion
     
     #region Parameter Check
-    $StartedParameter           = " "
-    $PatchingParameter          = " "
-    $MaintenanceModeParameter   = " "
     
     #---------------------------------------------------------------------------------------------------------------------
     # Check Parameters
@@ -172,70 +168,14 @@ function handler
         
     }
 
-    # try {
-        
-    #     $StartedParameter   =  Get-SSMParameter -Name $AWS.StartedParam
-        
-    # }
-    # catch {
-
-    #     Write-Host "No 'Started' Parameter Found"
-    #     Write-Host "Started Parameter error - $_"
-    # }
-
-    # try {
-        
-    #     $PatchingParameter   =  Get-SSMParameter -Name $AWS.PatchingParam
-        
-    # }
-    # catch {
-
-    #     Write-Host "No 'Patching' Parameter Found"
-    #     Write-Host "Patching Parameter error - $_"
-        
-    # }
-    # try {
-        
-    #     $MaintenanceModeParameter   =  Get-SSMParameter -Name $AWS.MaintModeParam
-        
-    # }
-    # catch {
-
-    #     Write-Host "No 'Maint' Parameter Found"
-    #     Write-Host "Patching Parameter error - $_"
-        
-    # }
-    
-    #endregion
-    
-    # $ParameterList = (Get-SSMParameterList).Name
-
-    
-    # if ($ParameterList.Contains($StartedParameter.Name)) {
-        
-    #     $StartupType    = "AutoScaling"
-    #     $Parameter      = $($AWS.StartedParam)
-    #     Write-Host "Setting Startup Type to 'Standard' due to presence of Parameter $($AWS.StartedParam)"
-
-    # }elseif ($ParameterList.Contains($PatchingParameter.Name)) {
-
-    #     $StartupType    = "Patching"
-    #     $Parameter      = $($AWS.PatchingParam)
-    #     Write-Host "Setting Startup Type to 'Patching' due to presence of Parameter $($AWS.PatchingParam)"
-
-    # }else {
-    
-    #     $StartupType    = "Manual"
-    #     $Parameter      = "No Parameters Found"
-    #     Write-Host "No Parameters found"
-    # }
-    
     #-----------------------------------------------------------------------------------------------------------------------------------------------
     # Send Teams Notification
     
     function Set-DaDDBEvent {
+        
         param (
 
+            $AWSAccount,
             $dynamoDBTableName,
             $State, 
             $TagState,
@@ -256,8 +196,9 @@ function handler
         $dynamoDBEvent = @{
 
             PK              = "$(Get-Date -format yyyy-MM-dd)"
-            SK              = "$State#$(get-date -format "HH:mm:ss:ms")#$EC2Instance"
+            SK              = "$AWSAccount#$State#$(get-date -format "HH:mm:ss:ms")"
             EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
+            AWSAccount      = $AWSAccount    
             State           = $State
             TagState        = $TagState
             EC2Instance     = $EC2Instance
@@ -288,6 +229,7 @@ function handler
             
             $ddbEventParameters = @{
 
+                AWSAccount          = $AWSAccount
                 dynamoDBTableName   = $dynamoDBTableName
                 State               = $EC2Instance.State
                 TagState            = $EC2Instance.TagState
@@ -343,6 +285,7 @@ function handler
             
             $ddbEventParameters = @{
 
+                AWSAccount          = $AWSAccount
                 dynamoDBTableName   = $dynamoDBTableName
                 State               = $EC2Instance.State
                 TagState            = $EC2Instance.TagState
@@ -380,6 +323,7 @@ function handler
                         
                         New-AdaptiveFact -Title 'State' -Value $EC2Instance.State
                         New-AdaptiveFact -Title 'Name' -Value $EC2Instance.Name
+                        New-AdaptiveFact -Title 'AWS Account' -Value $AWSAccount
                         New-AdaptiveFact -Title 'Tag-State' -Value $EC2Instance.TagState
                         New-AdaptiveFact -Title 'Type' -Value $EC2Instance.Type
                         New-AdaptiveFact -Title 'InstanceId' -Value $EC2Instance.InstanceId
@@ -415,6 +359,7 @@ function handler
             
             $ddbEventParameters = @{
 
+                AWSAccount          = $AWSAccount
                 dynamoDBTableName   = $dynamoDBTableName
                 State               = $EC2Instance.State
                 TagState            = $EC2Instance.TagState
@@ -455,6 +400,7 @@ function handler
             
             $ddbEventParameters = @{
 
+                AWSAccount          = $AWSAccount
                 dynamoDBTableName   = $dynamoDBTableName
                 State               = $EC2Instance.State
                 TagState            = $EC2Instance.TagState
@@ -490,6 +436,7 @@ function handler
                         
                         New-AdaptiveFact -Title 'State' -Value $EC2Instance.State
                         New-AdaptiveFact -Title 'Name' -Value $EC2Instance.Name
+                        New-AdaptiveFact -Title 'AWS Account' -Value $AWSAccount
                         New-AdaptiveFact -Title 'Tag-State' -Value $EC2Instance.TagState
                         New-AdaptiveFact -Title 'Type' -Value $EC2Instance.Type
                         New-AdaptiveFact -Title 'InstanceId' -Value $EC2Instance.InstanceId
