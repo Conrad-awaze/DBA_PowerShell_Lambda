@@ -124,9 +124,7 @@ function handler
     }
 
     #endregion
-    
-    #region Parameter Check
-    
+        
     #---------------------------------------------------------------------------------------------------------------------
     # Check Parameters
     
@@ -155,14 +153,17 @@ function handler
                 $StartupType    = "AutoScaling"
                 $Parameter      = $($AWS.StartedParam)
                 Write-Host "Setting Startup Type to 'Standard' due to presence of Parameter $($AWS.StartedParam)"
+
             }
             Default {
                 
                 $StartupType    = "Manual"
                 $Parameter      = "No Parameters Found"
                 Write-Host "No Parameters found"
+
             }
         }
+        
     }else {
         
         Write-Host "ERROR: More than one paramater found. Stopping the script...!!!"
@@ -346,7 +347,6 @@ function handler
                         
                     } -Separator Medium 
                     
-                    
                 } 
                 
                 New-AdaptiveAction -Title "AWS Details" -Body   {
@@ -354,9 +354,9 @@ function handler
                     New-AdaptiveTextBlock -Text "AWS Details" -Weight Bolder -Size Large -Color Accent # -HorizontalAlignment Center
                     New-AdaptiveFactSet {
                         
+                        New-AdaptiveFact -Title "Parameter" -Value $Parameter
                         New-AdaptiveFact -Title 'AWS Account' -Value $AWSAccount
                         New-AdaptiveFact -Title 'AvailabilityZone' -Value $EC2Instance.AvailabilityZone
-                        New-AdaptiveFact -Title "Parameter" -Value $Parameter
                         New-AdaptiveFact -Title "Function" -Value $LambdaCon.Function
                         New-AdaptiveFact -Title "LogGroup" -Value $LambdaCon.LogGroup
                         New-AdaptiveFact -Title "LogStream" -Value $LambdaCon.LogStream
@@ -475,10 +475,10 @@ function handler
                     New-AdaptiveTextBlock -Text "AWS Details" -Weight Bolder -Size Large -Color Accent # -HorizontalAlignment Center
                     New-AdaptiveFactSet {
                         
+                        New-AdaptiveFact -Title "Function" -Value $LambdaCon.Function
                         New-AdaptiveFact -Title 'AWS Account' -Value $AWSAccount
                         New-AdaptiveFact -Title 'AvailabilityZone' -Value $EC2Instance.AvailabilityZone
                         New-AdaptiveFact -Title "Parameter" -Value $Parameter
-                        New-AdaptiveFact -Title "Function" -Value $LambdaCon.Function
                         New-AdaptiveFact -Title "LogGroup" -Value $LambdaCon.LogGroup
                         New-AdaptiveFact -Title "LogStream" -Value $LambdaCon.LogStream
                         New-AdaptiveFact -Title "Time" -Value $LambdaCon.Time
