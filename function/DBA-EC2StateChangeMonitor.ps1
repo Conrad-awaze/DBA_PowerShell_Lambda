@@ -37,8 +37,11 @@ function handler
         State       = $EC2.State.Name.Value.ToUpper()
         Type        = $EC2.InstanceType.Value
         InstanceId  = $EC2.InstanceId
-        KeyName     = $EC2.KeyName
-        LaunchTime  = $EC2.LaunchTime
+        KeyName             = $EC2.KeyName
+        LaunchTime          = $EC2.LaunchTime
+        AvailabilityZone    = $EC2.Placement.AvailabilityZone
+        PlatformDetails     = $EC2.PlatformDetails
+        
     }
     
     $LambdaCon      = [PSCustomObject]@{
@@ -176,6 +179,8 @@ function handler
         param (
 
             $AWSAccount,
+            $AvailabilityZone,
+            $PlatformDetails,
             $dynamoDBTableName,
             $State, 
             $TagState,
@@ -195,20 +200,22 @@ function handler
 
         $dynamoDBEvent = @{
 
-            PK              = "$(Get-Date -format yyyy-MM-dd)"
-            SK              = "$AWSAccount#$State#$(get-date -format "HH:mm:ss:ms")"
-            EventTime       = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
-            AWSAccount      = $AWSAccount    
-            State           = $State
-            TagState        = $TagState
-            EC2Instance     = $EC2Instance
-            StartupType     = $StartupType
-            LogGroup        = $LogGroup
-            LogStream       = $LogStream
-            LambdaFunction  = $LambdaFunction
-            InstanceId      = $InstanceId
-            EventType       = $EventType
-            Parameter       = $Parameter
+            PK                  = "$(Get-Date -format yyyy-MM-dd)"
+            SK                  = "$AWSAccount#$State#$(get-date -format "HH:mm:ss:ms")"
+            EventTime           = "$(get-date -format "yyyy-MM-dd HH:mm:ss")"
+            AWSAccount          = $AWSAccount 
+            AvailabilityZone    = $AvailabilityZone
+            PlatformDetails     = $PlatformDetails
+            State               = $State
+            TagState            = $TagState
+            EC2Instance         = $EC2Instance
+            StartupType         = $StartupType
+            LogGroup            = $LogGroup
+            LogStream           = $LogStream
+            LambdaFunction      = $LambdaFunction
+            InstanceId          = $InstanceId
+            EventType           = $EventType
+            Parameter           = $Parameter
             
             
         } | ConvertTo-DDBItem
@@ -230,6 +237,8 @@ function handler
             $ddbEventParameters = @{
 
                 AWSAccount          = $AWSAccount
+                AvailabilityZone    = $EC2Instance.AvailabilityZone
+                PlatformDetails     = $EC2Instance.PlatformDetails
                 dynamoDBTableName   = $dynamoDBTableName
                 State               = $EC2Instance.State
                 TagState            = $EC2Instance.TagState
@@ -244,6 +253,7 @@ function handler
                 AccessKey           = $KeysCommon.AccessKey
                 SecretKey           = $KeysCommon.SecretKey
                 Region              = $Region
+                
             }
 
             Set-DaDDBEvent @ddbEventParameters
@@ -286,6 +296,8 @@ function handler
             $ddbEventParameters = @{
 
                 AWSAccount          = $AWSAccount
+                AvailabilityZone    = $EC2Instance.AvailabilityZone
+                PlatformDetails     = $EC2Instance.PlatformDetails
                 dynamoDBTableName   = $dynamoDBTableName
                 State               = $EC2Instance.State
                 TagState            = $EC2Instance.TagState
@@ -300,6 +312,7 @@ function handler
                 AccessKey           = $KeysCommon.AccessKey
                 SecretKey           = $KeysCommon.SecretKey
                 Region              = $Region
+                
             }
 
             Set-DaDDBEvent @ddbEventParameters
@@ -323,7 +336,8 @@ function handler
                         
                         New-AdaptiveFact -Title 'State' -Value $EC2Instance.State
                         New-AdaptiveFact -Title 'Name' -Value $EC2Instance.Name
-                        New-AdaptiveFact -Title 'AWS Account' -Value $AWSAccount
+
+                        New-AdaptiveFact -Title 'PlatformDetails' -Value $EC2Instance.PlatformDetails
                         New-AdaptiveFact -Title 'Tag-State' -Value $EC2Instance.TagState
                         New-AdaptiveFact -Title 'Type' -Value $EC2Instance.Type
                         New-AdaptiveFact -Title 'InstanceId' -Value $EC2Instance.InstanceId
@@ -340,6 +354,8 @@ function handler
                     New-AdaptiveTextBlock -Text "AWS Details" -Weight Bolder -Size Large -Color Accent # -HorizontalAlignment Center
                     New-AdaptiveFactSet {
                         
+                        New-AdaptiveFact -Title 'AWS Account' -Value $AWSAccount
+                        New-AdaptiveFact -Title 'AvailabilityZone' -Value $EC2Instance.AvailabilityZone
                         New-AdaptiveFact -Title "Parameter" -Value $Parameter
                         New-AdaptiveFact -Title "Function" -Value $LambdaCon.Function
                         New-AdaptiveFact -Title "LogGroup" -Value $LambdaCon.LogGroup
@@ -360,6 +376,8 @@ function handler
             $ddbEventParameters = @{
 
                 AWSAccount          = $AWSAccount
+                AvailabilityZone    = $EC2Instance.AvailabilityZone
+                PlatformDetails     = $EC2Instance.PlatformDetails
                 dynamoDBTableName   = $dynamoDBTableName
                 State               = $EC2Instance.State
                 TagState            = $EC2Instance.TagState
@@ -374,6 +392,7 @@ function handler
                 AccessKey           = $KeysCommon.AccessKey
                 SecretKey           = $KeysCommon.SecretKey
                 Region              = $Region
+                
             }
             
             Set-DaDDBEvent @ddbEventParameters
@@ -401,6 +420,8 @@ function handler
             $ddbEventParameters = @{
 
                 AWSAccount          = $AWSAccount
+                AvailabilityZone    = $EC2Instance.AvailabilityZone
+                PlatformDetails     = $EC2Instance.PlatformDetails
                 dynamoDBTableName   = $dynamoDBTableName
                 State               = $EC2Instance.State
                 TagState            = $EC2Instance.TagState
@@ -415,6 +436,7 @@ function handler
                 AccessKey           = $KeysCommon.AccessKey
                 SecretKey           = $KeysCommon.SecretKey
                 Region              = $Region
+                
             }
 
             Set-DaDDBEvent @ddbEventParameters
@@ -436,7 +458,7 @@ function handler
                         
                         New-AdaptiveFact -Title 'State' -Value $EC2Instance.State
                         New-AdaptiveFact -Title 'Name' -Value $EC2Instance.Name
-                        New-AdaptiveFact -Title 'AWS Account' -Value $AWSAccount
+                        New-AdaptiveFact -Title 'PlatformDetails' -Value $EC2Instance.PlatformDetails
                         New-AdaptiveFact -Title 'Tag-State' -Value $EC2Instance.TagState
                         New-AdaptiveFact -Title 'Type' -Value $EC2Instance.Type
                         New-AdaptiveFact -Title 'InstanceId' -Value $EC2Instance.InstanceId
@@ -453,6 +475,8 @@ function handler
                     New-AdaptiveTextBlock -Text "AWS Details" -Weight Bolder -Size Large -Color Accent # -HorizontalAlignment Center
                     New-AdaptiveFactSet {
                         
+                        New-AdaptiveFact -Title 'AWS Account' -Value $AWSAccount
+                        New-AdaptiveFact -Title 'AvailabilityZone' -Value $EC2Instance.AvailabilityZone
                         New-AdaptiveFact -Title "Parameter" -Value $Parameter
                         New-AdaptiveFact -Title "Function" -Value $LambdaCon.Function
                         New-AdaptiveFact -Title "LogGroup" -Value $LambdaCon.LogGroup

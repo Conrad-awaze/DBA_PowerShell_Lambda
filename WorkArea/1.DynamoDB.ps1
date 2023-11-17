@@ -61,7 +61,9 @@ $KeyA = (Get-SECSecretValue -SecretId 'DBAKeys-VRUK-A').SecretString | ConvertFr
 (Get-EC2Instance -AccessKey $KeyCommon.AccessKey -SecretKey $KeyCommon.SecretKey -Region eu-west-2).Instances 
 (Get-EC2Instance -AccessKey $KeySandpit.AccessKey -SecretKey $KeySandpit.SecretKey -Region eu-west-2).Instances
 
-(Get-EC2Instance -InstanceId $InstanceID).Instances
+$Instance = (Get-EC2Instance -InstanceId 'i-050bc3b7c1d01f687').Instances | gm
+$Instance.CurrentInstanceBootMode
+$Instance.Placement.AvailabilityZone
 # Set-AWSCredential -AccessKey $Key.AccessKey -SecretKey $Key.SecretKey -Scope Global
 
 Get-DDBTables -AccessKey $KeyCommon.AccessKey -SecretKey $KeyCommon.SecretKey -Region eu-west-2
